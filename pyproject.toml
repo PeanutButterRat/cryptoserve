@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "cryptoserve"
+name = "Cryptoserve"
 version = "0.1.0"
 description = "Server software that houses a library of cryptography-related learning exercises."
 authors = ["Eric Brown <ebrown5676@gmail.com>"]
@@ -9,6 +9,11 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^8.2.3"
 
 [build-system]
 requires = ["poetry-core"]
