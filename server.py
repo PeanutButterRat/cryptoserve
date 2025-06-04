@@ -1,15 +1,37 @@
+import argparse
 import asyncio
 
 import numpy as np
 
-HOST = "127.0.0.1"
-PORT = 5050
-
 np.seterr(over="ignore")
 
 
+class ArgparseFormatter(
+    argparse.ArgumentDefaultsHelpFormatter, argparse.MetavarTypeHelpFormatter
+):
+    pass
+
+
 async def main():
-    server = await asyncio.start_server(handle_client, HOST, PORT)
+    argparser = argparse.ArgumentParser(
+        prog="Cryptoserve",
+        description="Server software that houses a library of cryptography-related learning exercises.",
+        formatter_class=ArgparseFormatter,
+    )
+    argparser.add_argument(
+        "--host", type=str, default="127.0.0.1", help="host address to bind to"
+    )
+
+    argparser.add_argument(
+        "--port", "-p", type=int, default=5050, help="port number to bind to"
+    )
+
+    args = argparser.parse_args()
+
+    if not (0 <= args.port <= 65535):
+        argparser.error("port must be in range 0-65535")
+
+    server = await asyncio.start_server(handle_client, args.host, args.port)
     address = server.sockets[0].getsockname()
 
     print(f"Serving on {address}")
@@ -39,7 +61,7 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
     await send(greeting.encode(), writer)
     selection = await recieve(reader)
     selection = selection.decode()
-    selection = clamp(int(selection), 0, len(EXERCISES))
+    selection = clamp(int(selection), 0, len(EXERCISES) - 1)
     exercise = EXERCISES[selection]
     await exercise[1](reader, writer)
 
