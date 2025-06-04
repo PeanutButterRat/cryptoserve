@@ -8,12 +8,14 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+numpy = "^2.2.6"
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "^8.2.3"
+sphinx-rtd-theme = "^3.0.2"
 
 [build-system]
 requires = ["poetry-core"]
