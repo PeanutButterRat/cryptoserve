@@ -12,7 +12,7 @@ class ArgparseFormatter(
     pass
 
 
-async def main():
+def main():
     argparser = argparse.ArgumentParser(
         prog="Cryptoserve",
         description="Server software that houses a library of cryptography-related learning exercises.",
@@ -31,7 +31,11 @@ async def main():
     if not (0 <= args.port <= 65535):
         argparser.error("port must be in range 0-65535")
 
-    server = await asyncio.start_server(handle_client, args.host, args.port)
+    asyncio.run(serve(args.host, args.port))
+
+
+async def serve(host: str, port: int):
+    server = await asyncio.start_server(handle_client, host, port)
     address = server.sockets[0].getsockname()
 
     print(f"Serving on {address}")
