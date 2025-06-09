@@ -1,12 +1,8 @@
 import argparse
 import asyncio
 
-import numpy as np
-
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client
-
-np.seterr(over="ignore")
 
 
 class ArgparseFormatter(

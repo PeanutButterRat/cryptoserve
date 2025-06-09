@@ -1,17 +1,17 @@
-import numpy as np
-
 from cryptoserve.messaging import Client
+from cryptoserve.types import from_bytes, to_bytes, uint16
 
 
 async def simple_hash(client: Client):
     while data := (await client.recieve()):
         hash, chunk = data[:2], data[2:]
-        hash = np.uint16(int.from_bytes(hash))
-        chunk = np.uint16(int.from_bytes(chunk))
+        hash = from_bytes(hash)
+        chunk = from_bytes(chunk)
         hash = g(hash, chunk)
-        await client.send(int(hash).to_bytes(2))
+        response = to_bytes(hash)
+        await client.send(response)
 
 
-def g(a: np.uint16, b: np.uint16):
+def g(a: uint16, b: uint16):
     a ^= b + 0xBEAD
     return a >> 1
