@@ -1,6 +1,6 @@
 import numpy as np
 
-from cryptoserve.network import Client
+from cryptoserve.messaging import Client
 
 
 async def simple_hash(client: Client):
