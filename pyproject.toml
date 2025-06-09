@@ -19,7 +19,8 @@ sphinx-rtd-theme = "^3.0.2"
 sphinxcontrib-mermaid = "^1.0.0"
 
 [tool.poetry.scripts]
-cryptoserve = "cryptoserve.server:main"
+server = "cryptoserve.server:main"
+client = "cryptoserve.client:main"
 
 [build-system]
 requires = ["poetry-core"]
