@@ -27,6 +27,7 @@ def simple_hash(message: str, sock: socket.socket):
     data_length = len(data)
     padding = 4 - data_length % 4
     padded_data = data.ljust(data_length + padding, b"\0")
+    send(len(padded_data).to_bytes(), sock)
     hash = np.uint16(data_length)
 
     for i, chunk in enumerate(zip(padded_data[::2], padded_data[1::2])):
