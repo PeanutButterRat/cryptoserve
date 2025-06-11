@@ -1,29 +1,10 @@
-import textwrap
 from inspect import getmembers, isfunction
 
 import cryptoserve.exercises
+from cryptoserve.messaging.text_menu import TextMenu
 
-LINE_WIDTH = 70
-PADDING = " " * 3
-CONTENT_WIDTH = LINE_WIDTH - (len(PADDING) + 1) * 2
 DOCUMENTATION_LINK = "https://cryptoserve.readthedocs.io/"
-
-
-def center(sentence: str) -> str:
-    """Centers the given sentence with vertical bars (|) and spacing on either side."""
-    return f"|{PADDING}{sentence.center(CONTENT_WIDTH)}{PADDING}|"
-
-
-def wrap(section: str) -> str:
-    """Wraps a section of text and adds vertical bars (|) and padding to each wrapped line."""
-    sentence_length = LINE_WIDTH - (len(PADDING) + 1) * 2
-    sentences = textwrap.wrap(section, sentence_length)
-    sentences = map(center, sentences)
-    return "\n".join(sentences)
-
-
-# Separation bar that looks like "+==========+".
-horizontal_bar = "+" + "=" * (LINE_WIDTH - 2) + "+"
+LINE_WIDTH = 70
 
 project_description = """Cryptoserve is server software that hosts a library of 
 cryptography-related exercises, designed to help students learn a broad
@@ -38,40 +19,26 @@ get started, please select from one of the available exercises listed
 below. For more usage information, please refer to the official
 documentation at {DOCUMENTATION_LINK}."""
 
-# Blank line with bars at the ends used for spacing.
-spacing = center("")
+menu = TextMenu(max_width=75)
+menu.add_section("Welcome to Cryptoserve!", "greeting")
+menu.greeting.add_line(DOCUMENTATION_LINK)
 
+menu.add_section("About")
+menu.about.add_line(project_description)
+
+menu.add_section("Usage")
+menu.usage.add_line(usage_directions)
+
+
+menu.add_section("Available Exercises", "exercises")
 numbered_exercise_names = []
 EXERCISES = []
 
 for i, (name, exercise) in enumerate(getmembers(cryptoserve.exercises, isfunction)):
     exercise_converted_from_snakecase = name.replace("_", " ").title()
     number = f"{i:<1}. "
-    numbered_line = f"{number}{exercise_converted_from_snakecase.ljust(CONTENT_WIDTH - len(number))}"
-    formatted_line = center(numbered_line)
-    numbered_exercise_names.append(formatted_line)
+    numbered_line = f"{number}{exercise_converted_from_snakecase}"
+    menu.exercises.add_line(numbered_line)
     EXERCISES.append(exercise)
 
-
-sections = [
-    horizontal_bar,
-    center("Welcome to Cryptoserve!"),
-    center(DOCUMENTATION_LINK),
-    horizontal_bar,
-    spacing,
-    wrap(project_description),
-    spacing,
-    center("~~~"),
-    spacing,
-    wrap(usage_directions),
-    spacing,
-    horizontal_bar,
-    center("Available Exercises:"),
-    horizontal_bar,
-    spacing,
-    *numbered_exercise_names,
-    spacing,
-    horizontal_bar,
-]
-
-GREETING = "\n".join(sections)
+GREETING = str(menu)

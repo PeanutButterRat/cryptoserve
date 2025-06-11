@@ -80,7 +80,9 @@ class TextMenu:
                 wrapped_line = textwrap.wrap(line, content_width)
 
                 for sub_line in wrapped_line:
-                    actual_lines.append(self._format_line(sub_line, total_width))
+                    actual_lines.append(
+                        self._format_line(sub_line.center(content_width), total_width)
+                    )
 
             actual_lines.extend([vertical_padding_line] * self.vertical_padding_lines)
 
