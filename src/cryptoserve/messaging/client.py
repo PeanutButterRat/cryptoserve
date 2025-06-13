@@ -28,7 +28,9 @@ class Client:
         raw_bytes = await self._recieve()
 
         if length > 0 and len(raw_bytes) != length:
-            raise ValueError("recieved data is not expected length")
+            raise ValueError(
+                f"recieved data is not expected length (expected {length} but recieved {len(raw_bytes)})"
+            )
 
         if verifier:
             return verifier(raw_bytes)

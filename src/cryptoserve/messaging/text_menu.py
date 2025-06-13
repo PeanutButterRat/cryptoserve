@@ -40,7 +40,9 @@ class TextMenu:
         if self.max_width > 0:
             return self.max_width
 
-        longest_line_length = max(section.get_length_of_longest_line() for section in self._sections.values())
+        longest_line_length = max(
+            section.get_length_of_longest_line() for section in self._sections.values()
+        )
         total_padding_length = 2 * (self.horizontal_padding_spaces + 1)
 
         return longest_line_length + total_padding_length
