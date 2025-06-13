@@ -3,7 +3,10 @@ from cryptoserve.types import from_bytes, to_bytes, uint16
 
 
 async def simple_hash(client: Client):
-    while data := (await client.recieve()):
+    data_length = from_bytes(await client.expect(2))
+
+    for _ in range(data_length // 4):
+        data = await client.expect(4)
         hash, chunk = data[:2], data[2:]
         hash = from_bytes(hash)
         chunk = from_bytes(chunk)

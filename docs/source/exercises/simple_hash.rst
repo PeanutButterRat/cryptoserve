@@ -68,11 +68,12 @@ Client-Server Protocol
 **Simple Hash** is further extended to a client-server model in the following way:
 
 1. The **client** first picks the input data and pads its length to a mulitple of 4.
-2. The **client applies f** to the initial hash and first 2 bytes of data.
-3. The client sends the **resulting hash** and the **next 2-byte chunk** to the server.
-4. The **server applies g** and returns the new hash.
-5. The client applies **f** again on the returned hash and next chunk
-6. Steps **3 - 5 are repeated** until the input is exhausted.
+2. The **client** notifies the server of the length of padded data to be hashed.
+3. The **client applies f** to the initial hash and first 2 bytes of data.
+4. The client sends the **resulting hash** and the **next 2-byte chunk** to the server.
+5. The **server applies g** and returns the new hash.
+6. The client applies **f** again on the returned hash and next chunk
+7. Steps **3 - 5 are repeated** until the input is exhausted.
 
 
 Sequence Diagram
@@ -83,6 +84,7 @@ Here is a visual representation of the client-server interaction where...
 - **hᵢ** is the i-th hash value.
 - **cᵢ** is the i-th chunk of input data.
 - **n** is the total number of chunks to be hashed.
+- **padded** is the padded input data.
 
 .. mermaid::
 
@@ -91,6 +93,7 @@ Here is a visual representation of the client-server interaction where...
       participant Server
 
       Note over Client: h₀ ← f(input.length)
+      Client->>Server: padded.length
       Client->>Server: h₀, c₁
       Note over Server: h₁ ← g(h₀, c₁)
       Server-->>Client: h₁
@@ -144,6 +147,8 @@ Data Exchange
    sequenceDiagram
       participant Client
       participant Server
+
+      Client->>Server: 8 (length of padded input)
 
       loop chunk 1
          Note over Client: f(h₀, 0x4170) = 0x1258 → h₁

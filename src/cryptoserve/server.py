@@ -3,6 +3,7 @@ import asyncio
 
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client
+from typing import Any, Callable, Optional
 
 
 class ArgparseFormatter(
@@ -51,14 +52,21 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
     client = Client(reader, writer)
     await client.send(GREETING.encode())
 
-    selection = await client.recieve()
-    selection = selection.decode()
+    selection = await client.expectstr()
     selection = clamp(int(selection), 0, len(EXERCISES) - 1)
     exercise = EXERCISES[selection]
 
-    await exercise(client)
+    await run_exercise(client, exercise)
 
     print(f"Terminating connection with {address}")
+
+
+async def run_exercise(client: Client, exercise: Callable[[Client], None]):
+    try:
+        await exercise(client)
+    except Exception as error:
+        print(f"An error occurred: {error}")
+        await client.error(str(error))
 
 
 def clamp(x, minimum, maximum):

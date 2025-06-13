@@ -17,7 +17,7 @@ Students are responsible for implementing the other side of the exchange in orde
    :caption: Contents:
 
    exercises
-
+   api
 
 Indices and tables
 ==================
