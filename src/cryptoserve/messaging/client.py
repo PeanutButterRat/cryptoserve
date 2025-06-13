@@ -9,9 +9,13 @@ class Client:
         self.reader = reader
         self.writer = writer
 
-    async def send(self, data: bytes):
+    async def send(self, data: bytes, is_error: bool = False):
         data_length = len(data)
         header = data_length.to_bytes(HEADER_LENGTH_BYTES)
+
+        if is_error:
+            header[0] |= (1 << 7)
+
         entire_message = header + data
         self.writer.write(entire_message)
         await self.writer.drain()
@@ -44,3 +48,7 @@ class Client:
             raise ValueError("recived string is not expected length")
 
         return string
+
+    async def error(self, message: str):
+        raw_bytes = message.encode()
+        self.send(raw_bytes, True)
