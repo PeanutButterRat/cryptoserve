@@ -13,7 +13,7 @@ class TextMenu:
             self.lines.append(line)
 
         def get_length_of_longest_line(self):
-            return max(self.lines, key=lambda line: len(line))
+            return max(map(lambda line: len(line), self.lines))
 
     def __init__(
         self,
@@ -40,17 +40,13 @@ class TextMenu:
         if self.max_width > 0:
             return self.max_width
 
-        longest_line_length = max(
-            self._sections.values(),
-            key=lambda section: section.get_length_of_longest_line(),
-        )
+        longest_line_length = max(section.get_length_of_longest_line() for section in self._sections.values())
         total_padding_length = 2 * (self.horizontal_padding_spaces + 1)
 
         return longest_line_length + total_padding_length
 
-    def _format_line(self, text, width):
+    def _format_line(self, text, content_width):
         padding = " " * self.horizontal_padding_spaces
-        content_width = width - 2 * (self.horizontal_padding_spaces + 1)
 
         return f"|{padding}{text.ljust(content_width)}{padding}|"
 
@@ -62,14 +58,9 @@ class TextMenu:
 
     def __str__(self):
         total_width = self._calculate_width()
-        content_width = (
-            total_width
-            if self.max_width < 0
-            else total_width - 2 * (self.horizontal_padding_spaces + 1)
-        )
-
+        content_width = total_width - 2 * (self.horizontal_padding_spaces + 1)
         actual_lines = []
-        vertical_padding_line = self._format_line("", total_width)
+        vertical_padding_line = self._format_line("", content_width)
         bottom_line = f"+{"=" * (total_width - 2)}+"
 
         for section in self._sections.values():
@@ -81,7 +72,7 @@ class TextMenu:
 
                 for sub_line in wrapped_line:
                     actual_lines.append(
-                        self._format_line(sub_line.center(content_width), total_width)
+                        self._format_line(sub_line.center(content_width), content_width)
                     )
 
             actual_lines.extend([vertical_padding_line] * self.vertical_padding_lines)
