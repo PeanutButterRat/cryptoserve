@@ -34,3 +34,11 @@ class Client:
             return verifier(raw_bytes)
         else:
             return raw_bytes
+
+    async def expectstr(self, length: int = -1):
+        string = await self.expect(verifier=lambda bytes: bytes.decode())
+
+        if length > 0 and len(string) != length:
+            raise ValueError("recived string is not expected length")
+
+        return string

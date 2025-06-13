@@ -51,8 +51,7 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
     client = Client(reader, writer)
     await client.send(GREETING.encode())
 
-    selection = await client.expect()
-    selection = selection.decode()
+    selection = await client.expectstr()
     selection = clamp(int(selection), 0, len(EXERCISES) - 1)
     exercise = EXERCISES[selection]
 
