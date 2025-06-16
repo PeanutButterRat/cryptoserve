@@ -13,9 +13,16 @@ author = "Eric Brown"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinxcontrib.mermaid"]
+extensions = [
+    "sphinxcontrib.mermaid",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+]
 templates_path = ["_templates"]
 exclude_patterns = []
+autodoc_class_signature = "separated"
+autodoc_typehints = "description"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
