@@ -1,7 +1,7 @@
 .. _exercises:
 
-Exercises
-=========
+Exercises Reference
+===================
 
 This page provides a listing of the exercises that are currently supported by **Cryptoserve**.
 Each exercise is designed to highlight a specific cryptographic concept.

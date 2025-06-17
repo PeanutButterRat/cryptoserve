@@ -9,10 +9,18 @@ Students are responsible for implementing the other side of the exchange in orde
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Overview
 
-   exercises
    api
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Usage
+   :hidden:
+
+   protocol
+   exercises
 
 Indices and tables
 ==================
