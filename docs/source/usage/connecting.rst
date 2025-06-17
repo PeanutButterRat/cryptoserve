@@ -1,4 +1,4 @@
-.. _connecting_to_the_server:
+.. _connecting:
 
 Connecting to the Server
 ========================

@@ -14,4 +14,4 @@ Each exercise is designed to highlight a specific cryptographic concept.
 .. toctree::
    :maxdepth: 1
 
-   exercises/simple_hash
+   simple_hash

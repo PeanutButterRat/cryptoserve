@@ -19,9 +19,18 @@ Students are responsible for implementing the other side of the exchange in orde
    :caption: Usage
    :hidden:
 
-   protocol
-   connecting_to_server
-   exercise_reference
+   usage/protocol
+   usage/connecting
+   exercises/listing
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Extensions and Contributions
+   :hidden:
+
+   contributing/custom_exercises
+
 
 Indices and tables
 ==================
