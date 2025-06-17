@@ -1,6 +1,6 @@
-.. _exercises:
+.. _exercise_reference:
 
-Exercises Reference
+Exercise Reference
 ===================
 
 This page provides a listing of the exercises that are currently supported by **Cryptoserve**.

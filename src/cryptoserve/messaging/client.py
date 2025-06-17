@@ -33,7 +33,7 @@ class Client:
             is_error: Whether the message should set the error flag. Defaults to False.
         """
         data_length = len(data)
-        header = data_length.to_bytes(HEADER_LENGTH_BYTES)
+        header = bytearray(data_length.to_bytes(HEADER_LENGTH_BYTES))
 
         if is_error:
             header[0] |= (1 << 7)

@@ -20,7 +20,8 @@ Students are responsible for implementing the other side of the exchange in orde
    :hidden:
 
    protocol
-   exercises
+   connecting_to_server
+   exercise_reference
 
 Indices and tables
 ==================
