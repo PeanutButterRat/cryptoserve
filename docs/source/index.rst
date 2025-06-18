@@ -7,12 +7,6 @@ designed to help students learn a broad range of cryptographic concepts through 
 Each exercise defines a protocol in which **Cryptoserve** controls one side of the interaction.
 Students are responsible for implementing the other side of the exchange in order to complete the challenge.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Overview
-
-   api
-
 
 .. toctree::
    :maxdepth: 2
@@ -30,6 +24,7 @@ Students are responsible for implementing the other side of the exchange in orde
    :hidden:
 
    contributing/custom_exercises
+   contributing/api
 
 
 Indices and tables

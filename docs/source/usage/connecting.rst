@@ -70,8 +70,8 @@ Then read the server's response to ensure you started the correct exercise.
    print(greeting.confirmation())
 
 
-Complete Code
--------------
+Example Code
+------------
 
 Here is the complete code for what we have written:
 
@@ -104,7 +104,7 @@ Here is the complete code for what we have written:
       # Start an exercise.
       send(sock, "1".encode())
 
-      # Complete exercise here...
+      # Add steps to complete Exercise 1 here...
 
 
    # Import guard (good practice, but not necessary).
@@ -115,7 +115,7 @@ Here is the complete code for what we have written:
 Completing an Exercise
 ----------------------
 
-Please refer to :ref:`exercise_reference` to see how to complete a specific exercise. In general,
+Please refer to :ref:`listing` to see how to complete a specific exercise. In general,
 here are some tips that you might find useful in your work:
 
 - Before using data recieved from the server, check to see if the **error flag** is set. If so, print out the message and terminate your program.
@@ -124,7 +124,7 @@ here are some tips that you might find useful in your work:
 - If you are really stuck, it might be helpful to refer to Cryptoserve's source code for clarification (it *is* an open-source project, after all).
 - Most importantly, don't be embarressed to ask for help!
 
-More Resources
+Extra Resources
 ---------------
 
 - `Python socket Module Documentation <https://docs.python.org/3/library/socket.html>`_

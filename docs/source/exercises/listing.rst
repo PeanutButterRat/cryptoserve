@@ -1,4 +1,4 @@
-.. _exercise_reference:
+.. _listing:
 
 Exercise Reference
 ===================
