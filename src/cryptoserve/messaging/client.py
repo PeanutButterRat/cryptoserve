@@ -126,3 +126,7 @@ class Client:
         """
         raw_bytes = message.encode()
         await self.send(raw_bytes, True)
+
+    async def ok(self):
+        raw_bytes = "OK".encode()
+        await self.send(raw_bytes)
