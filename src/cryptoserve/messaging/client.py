@@ -90,7 +90,7 @@ class Client:
         else:
             return raw_bytes
 
-    async def expectstr(self, length: int = -1) -> str:
+    async def expect_str(self, length: int = -1) -> str:
         """
         Receive a UTF-8 string from the client with optional length validation.
 
