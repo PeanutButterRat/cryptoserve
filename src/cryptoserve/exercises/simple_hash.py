@@ -7,7 +7,7 @@ async def simple_hash(client: Client):
     data = await client.expect(verifier=validate_initial_data)
     await client.ok()
 
-    chunks = await client.expect(verifier=lambda new: validate_padded_data(new, data))
+    chunks = await client.expect(verifier=validate_padded_data, received=data)
     await client.ok()
 
     hash = bytearray([len(data), len(data)])
@@ -16,9 +16,7 @@ async def simple_hash(client: Client):
     for i, chunk in enumerate(chunks):
         if i % 2 == 0:
             hash = f(hash, chunk)
-            hash = await client.expect(
-                2, verifier=lambda data: validate_hash(data, hash)
-            )
+            hash = await client.expect(2, validate_hash, hash=hash)
         else:
             hash = g(hash, chunk)
             await client.send(to_bytes(hash))

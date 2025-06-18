@@ -58,7 +58,10 @@ class Client:
         return data
 
     async def expect(
-        self, length: int = -1, verifier: Optional[Callable[[bytes], Any]] = None
+        self,
+        length: int = -1,
+        verifier: Optional[Callable[[bytes], Any]] = None,
+        **kwargs,
     ) -> Any:
         """
         Receive a message and optionally verify its content or length.
@@ -86,7 +89,7 @@ class Client:
             )
 
         if verifier:
-            return verifier(raw_bytes)
+            return verifier(raw_bytes, **kwargs)
         else:
             return raw_bytes
 
