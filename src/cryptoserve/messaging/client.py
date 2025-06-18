@@ -6,8 +6,8 @@ HEADER_LENGTH_BYTES = 2
 
 class Client:
     """
-    This class is used as an interface for sending and recieving data from a socket between the client and server. 
-    It provides various utilities to abstract the underlying protocol information to send blobs of data back and 
+    This class is used as an interface for sending and recieving data from a socket between the client and server.
+    It provides various utilities to abstract the underlying protocol information to send blobs of data back and
     forth in an asynchronous manner.
     """
 
@@ -16,7 +16,7 @@ class Client:
 
         Args:
             reader: Reader instance for reading from the socket. This should not be instantiated directly but rather
-                come from the call to **asyncio.start_server**. 
+                come from the call to **asyncio.start_server**.
                 See `asynchio.StreamWriter <https://docs.python.org/3/library/asyncio-stream.html#streamreader>`_.
             writer: Writer instance for writing to the socket. This also should come from **asyncio.start_server**.
                 See `asynchio.StreamReader <https://docs.python.org/3/library/asyncio-stream.html#streamreader>`_.
@@ -36,7 +36,7 @@ class Client:
         header = bytearray(data_length.to_bytes(HEADER_LENGTH_BYTES))
 
         if is_error:
-            header[0] |= (1 << 7)
+            header[0] |= 1 << 7
 
         entire_message = header + data
         self.writer.write(entire_message)
@@ -63,7 +63,7 @@ class Client:
         """
         Receive a message and optionally verify its content or length.
 
-        This method reads a raw byte message from the stream, optionally checks its 
+        This method reads a raw byte message from the stream, optionally checks its
         length, and applies a function to modify and further validate the content.
 
         Args:

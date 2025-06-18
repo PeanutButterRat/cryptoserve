@@ -1,9 +1,9 @@
 import argparse
 import asyncio
+from typing import Any, Callable, Optional
 
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client
-from typing import Any, Callable, Optional
 
 
 class ArgparseFormatter(

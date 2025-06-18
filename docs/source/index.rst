@@ -27,6 +27,15 @@ Students are responsible for implementing the other side of the exchange in orde
    contributing/api
 
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Hosting and Deployment
+   :hidden:
+
+   deployment/server
+   deployment/docs
+
+
 Indices and tables
 ==================
 
