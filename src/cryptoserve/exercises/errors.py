@@ -12,9 +12,9 @@ class ExerciseError(Exception):
 
     def json(self):
         dictionary = {
-            "error": str(self),
+            "error": f"{type(self).__name__}: {self}",
             "explanation": self.explanation,
             "hints": self.hints,
         }
 
-        return json.dumps(dictionary, indent=4)
+        return json.dumps(dictionary)
