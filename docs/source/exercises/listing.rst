@@ -1,7 +1,7 @@
-.. _exercises:
+.. _listing:
 
-Exercises
-=========
+Exercise Reference
+===================
 
 This page provides a listing of the exercises that are currently supported by **Cryptoserve**.
 Each exercise is designed to highlight a specific cryptographic concept.
@@ -14,4 +14,4 @@ Each exercise is designed to highlight a specific cryptographic concept.
 .. toctree::
    :maxdepth: 1
 
-   exercises/simple_hash
+   simple_hash

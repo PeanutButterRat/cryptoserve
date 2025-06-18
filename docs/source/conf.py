@@ -13,7 +13,23 @@ author = "Eric Brown"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinxcontrib.mermaid"]
+extensions = [
+    "sphinxcontrib.mermaid",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+]
+
+autodoc_class_signature = "separated"
+autodoc_typehints = "description"
+autodoc_default_options = {
+    "members": True,
+    "private-members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+}
+
 templates_path = ["_templates"]
 exclude_patterns = []
 

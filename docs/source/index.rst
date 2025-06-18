@@ -1,8 +1,3 @@
-.. Cryptoserve documentation master file, created by
-   sphinx-quickstart on Thu May 29 10:39:35 2025.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Cryptoserve's documentation!
 =======================================
 
@@ -12,12 +7,34 @@ designed to help students learn a broad range of cryptographic concepts through 
 Each exercise defines a protocol in which **Cryptoserve** controls one side of the interaction.
 Students are responsible for implementing the other side of the exchange in order to complete the challenge.
 
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Usage
+   :hidden:
 
-   exercises
-   api
+   usage/protocol
+   usage/connecting
+   exercises/listing
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Extensions and Contributions
+   :hidden:
+
+   contributing/custom_exercises
+   contributing/api
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Hosting and Deployment
+   :hidden:
+
+   deployment/server
+   deployment/docs
+
 
 Indices and tables
 ==================
