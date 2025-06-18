@@ -3,6 +3,7 @@ from typing import Callable
 
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client
+from cryptoserve.types.errors import ExerciseError
 
 
 async def serve(host: str, port: int):
@@ -35,9 +36,10 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
 async def run_exercise(client: Client, exercise: Callable[[Client], None]):
     try:
         await exercise(client)
-    except Exception as error:
+    except ExerciseError as error:
         print(f"An error occurred: {error}")
-        await client.error(str(error))
+        message = error.json()
+        await client.error(message)
 
 
 def clamp(x, minimum, maximum):
