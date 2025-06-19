@@ -44,7 +44,7 @@ class DataMismatchError(ExerciseError):
         explanation: str = "",
         hints: Optional[List[str]] = None,
     ):
-        error = f"recived {data_type} does not match expected {data_type}"
+        error = f"recieved {data_type} does not match expected {data_type}"
         super().__init__(error, explanation, hints)
 
 
