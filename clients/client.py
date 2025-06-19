@@ -46,8 +46,15 @@ def simple_hash(message: str, sock: socket.socket):
 
 
 def receive(sock: socket.socket):
-    data_length = int.from_bytes(sock.recv(2))
-    return sock.recv(data_length)
+    header = int.from_bytes(sock.recv(2))
+    data_length = header & 0x0FFF
+    is_error = (header >> 15) == 1
+    data = sock.recv(data_length)
+
+    if is_error:
+        raise Exception(data)
+
+    return data
 
 
 def send(data: bytes, sock: socket.socket):

@@ -20,8 +20,7 @@ sphinxcontrib-mermaid = "^1.0.0"
 sphinx-autodoc-typehints = "^3.2.0"
 
 [tool.poetry.scripts]
-server = "cryptoserve.server:main"
-client = "cryptoserve.client:main"
+cryptoserve = "cryptoserve.cli:main"
 
 [build-system]
 requires = ["poetry-core"]

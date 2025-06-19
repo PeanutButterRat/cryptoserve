@@ -1,6 +1,8 @@
 import asyncio
 from typing import Any, Callable, Optional
 
+from cryptoserve.types import DataTransmissionError
+
 HEADER_LENGTH_BYTES = 2
 
 
@@ -58,7 +60,10 @@ class Client:
         return data
 
     async def expect(
-        self, length: int = -1, verifier: Optional[Callable[[bytes], Any]] = None
+        self,
+        length: int = -1,
+        verifier: Optional[Callable[[bytes], Any]] = None,
+        **kwargs,
     ) -> Any:
         """
         Receive a message and optionally verify its content or length.
@@ -68,7 +73,7 @@ class Client:
 
         Args:
             length: Expected length of the message. If greater than 0, the message length will
-                be verified and raise a ValueError if the length does not match.
+                be verified and raise a DataTransmissionError if the length does not match.
             verifier: A function that accepts an array of raw bytes and returns a processed or validated result.
                 If None, returns the raw bytes.
 
@@ -81,16 +86,16 @@ class Client:
         raw_bytes = await self._recieve()
 
         if length > 0 and len(raw_bytes) != length:
-            raise ValueError(
-                f"received data is not expected length (expected {length} but received {len(raw_bytes)})"
+            raise DataTransmissionError(
+                f"expected {length} bytes but only received {len(raw_bytes)})"
             )
 
         if verifier:
-            return verifier(raw_bytes)
+            return verifier(raw_bytes, **kwargs)
         else:
             return raw_bytes
 
-    async def expectstr(self, length: int = -1) -> str:
+    async def expect_str(self, length: int = -1) -> str:
         """
         Receive a UTF-8 string from the client with optional length validation.
 
@@ -110,7 +115,9 @@ class Client:
         string = await self.expect(verifier=lambda bytes: bytes.decode())
 
         if length > 0 and len(string) != length:
-            raise ValueError("received string is not expected length")
+            raise DataTransmissionError(
+                f"expected string of length {length} but recieved string of length {len(string)})"
+            )
 
         return string
 
@@ -126,3 +133,13 @@ class Client:
         """
         raw_bytes = message.encode()
         await self.send(raw_bytes, True)
+
+    async def ok(self):
+        """
+        Send an OK message to the client.
+
+        Sends the string "OK" to the client. Use this to confirm data sent by the client
+        when no other response is applicable.
+        """
+        raw_bytes = "OK".encode()
+        await self.send(raw_bytes)
