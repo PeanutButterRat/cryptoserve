@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any, Callable, Optional
 
-from cryptoserve.exercises import DataTransmissionError
+from cryptoserve.types import DataTransmissionError
 
 HEADER_LENGTH_BYTES = 2
 

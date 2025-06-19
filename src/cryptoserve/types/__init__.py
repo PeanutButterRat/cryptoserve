@@ -1,6 +1,8 @@
 import numpy as np
 from numpy import integer, uint16, uint32
 
+from cryptoserve.types.errors import *
+
 np.seterr(over="ignore")
 
 

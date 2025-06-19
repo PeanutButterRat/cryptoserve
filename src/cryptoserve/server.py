@@ -1,9 +1,9 @@
 import asyncio
 from typing import Callable
 
-from cryptoserve.exercises import ExerciseError
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client
+from cryptoserve.types import ExerciseError
 
 
 async def serve(host: str, port: int):
