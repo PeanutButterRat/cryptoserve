@@ -21,31 +21,15 @@ class ExerciseError(Exception):
 
 
 class InvalidPaddingError(ExerciseError):
-    def __init__(self, explanation: str = "", hints: Optional[List[str]] = None):
-        error = "data has invalid padding"
-        super().__init__(error, explanation, hints)
+    pass
 
 
 class InvalidLengthError(ExerciseError):
-    def __init__(
-        self,
-        size_adjective: str = "large",
-        explanation: str = "",
-        hints: Optional[List[str]] = None,
-    ):
-        error = f"data is too {size_adjective}"
-        super().__init__(error, explanation, hints)
+    pass
 
 
 class DataMismatchError(ExerciseError):
-    def __init__(
-        self,
-        data_type: str = "data",
-        explanation: str = "",
-        hints: Optional[List[str]] = None,
-    ):
-        error = f"recieved {data_type} does not match expected {data_type}"
-        super().__init__(error, explanation, hints)
+    pass
 
 
 class DataTransmissionError(ExerciseError):
