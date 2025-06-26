@@ -1,6 +1,8 @@
+import os
 from inspect import getmembers, isfunction
 
 import cryptoserve.exercises
+from cryptoserve.exercises import load_exercises
 from cryptoserve.messaging.text_menu import TextMenu
 
 DOCUMENTATION_LINK = "https://cryptoserve.readthedocs.io/"
@@ -34,7 +36,10 @@ menu.add_section("Available Exercises", "exercises")
 numbered_exercise_names = []
 EXERCISES = []
 
-for i, (name, exercise) in enumerate(getmembers(cryptoserve.exercises, isfunction)):
+path = os.path.dirname(cryptoserve.exercises.__file__)
+
+
+for i, (name, exercise) in enumerate(load_exercises(path)):
     exercise_converted_from_snakecase = name.replace("_", " ").title()
     number = f"{i:<1}. "
     numbered_line = f"{number}{exercise_converted_from_snakecase}"
