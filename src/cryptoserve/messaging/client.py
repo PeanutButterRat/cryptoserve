@@ -1,20 +1,34 @@
+"""
+Interface for facilitating communication between the client and server.
+
+
+This module defines the ``Client`` class which abstracts the details away of the network protocol. It handles the details
+of encapsulating data for transmission so the developer can concern themselves with the data themselves instead of
+worrying about the protocol details. It also provides some utilities for error-checking data recieved from a client
+during the course of an exercise.
+"""
+
 import asyncio
 from typing import Any, Callable, Optional
 
 from cryptoserve.types import DataTransmissionError
 
 HEADER_LENGTH_BYTES = 2
+OK_MESSAGE = "OK"
 
 
 class Client:
     """
+    Interface for sending and receiving data from a user.
+
     This class is used as an interface for sending and recieving data from a socket between the client and server.
     It provides various utilities to abstract the underlying protocol information to send blobs of data back and
     forth in an asynchronous manner.
     """
 
     def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-        """Constructor method.
+        """
+        Constructor method.
 
         Args:
             reader: Reader instance for reading from the socket. This should not be instantiated directly but rather
@@ -81,7 +95,7 @@ class Client:
             Any: The raw bytes, or the result of the verifier function.
 
         Raises:
-            ValueError: If the message length does not match the expected length.
+            DataTransmissionError: If the message length does not match the expected length.
         """
         raw_bytes = await self._recieve()
 
@@ -141,5 +155,5 @@ class Client:
         Sends the string "OK" to the client. Use this to confirm data sent by the client
         when no other response is applicable.
         """
-        raw_bytes = "OK".encode()
+        raw_bytes = OK_MESSAGE.encode()
         await self.send(raw_bytes)
