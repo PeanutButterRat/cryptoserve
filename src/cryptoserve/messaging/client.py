@@ -40,12 +40,25 @@ class Client:
         self.reader = reader
         self.writer = writer
 
+    async def _send(self, data: bytes):
+        """
+        Write to the socket.
+
+        This method should be used to write data to the socket connection instead of interacting with the StreamWriter
+        directly in order to make the class easier to mock during testing.
+
+        Args:
+            data: The bytes to send.
+        """
+        self.writer.write(data)
+        await self.writer.drain()
+
     async def send(self, data: bytes, is_error: bool = False):
         """
         Send a collection of bytes to the client.
 
         Args:
-            data: The bytes to send.
+            data: The bytes to send (header not included).
             is_error: Whether the message should set the error flag. Defaults to False.
         """
         data_length = len(data)
@@ -55,8 +68,7 @@ class Client:
             header[0] |= 1 << 7
 
         entire_message = header + data
-        self.writer.write(entire_message)
-        await self.writer.drain()
+        await self._send(entire_message)
 
     async def _recieve(self) -> bytes:
         """
