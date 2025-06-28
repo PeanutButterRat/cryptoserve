@@ -6,7 +6,10 @@ import pytest
 from cryptoserve.messaging import Client
 
 
-def create_mock_client(recieved_data: list[bytes]):
+def create_mock_client(recieved_data: list[bytes | str]):
+    recieved_data = list(
+        map(lambda arg: arg.encode() if isinstance(arg, str) else arg, recieved_data)
+    )
     forbidden_mock = AsyncMock(
         side_effect=RuntimeError(
             "directly accessing the StreamReader or StreamWriter during a test is not allowed"

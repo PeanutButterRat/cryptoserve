@@ -113,7 +113,7 @@ class Client:
 
         if length > 0 and len(raw_bytes) != length:
             raise DataTransmissionError(
-                f"expected {length} bytes but only received {len(raw_bytes)})"
+                f"expected {length} bytes but received {len(raw_bytes)} instead"
             )
 
         if verifier:

@@ -12,11 +12,11 @@ async def test_initial_length(client):
 
 @run_exercise(
     [
-        [b"123", b"123"],
-        [b"123", b"123\x01"],
-        [b"123", b"023\x00"],
-        [b"1234", b"1234" + b"\x00" * 3],
-        [b"123", b"123" + b"\x00" * 5],
+        ["123", "123"],
+        ["123", "123\x01"],
+        ["123", "023\x00"],
+        ["1234", "1234" + "\x00" * 3],
+        ["123", "123" + "\x00" * 5],
     ]
 )
 async def test_invalid_padding(client):
@@ -26,9 +26,9 @@ async def test_invalid_padding(client):
 
 @run_exercise(
     [
-        [b"Apple", b"Apple" + b"\x00" * 3, b"\x00\x00"],
-        [b"Apple", b"Apple" + b"\x00" * 3, b"\x3a\x59"],
-        [b"Apple", b"Apple" + b"\x00" * 3, b"\x3a\x58", b"\x7b\xf0"],
+        ["Apple", "Apple" + "\x00" * 3, b"\x00\x00"],
+        ["Apple", "Apple" + "\x00" * 3, b"\x3a\x59"],
+        ["Apple", "Apple" + "\x00" * 3, b"\x3a\x58", b"\x7b\xf0"],
     ]
 )
 async def test_invalid_hash(client):
@@ -38,7 +38,7 @@ async def test_invalid_hash(client):
 
 @run_exercise(
     [
-        [b"Apple", b"Apple" + b"\x00" * 3, b"\x3a\x58", b"\x7b\xf1"],
+        ["Apple", "Apple" + "\x00" * 3, b"\x3a\x58", b"\x7b\xf1"],
     ]
 )
 async def test_successful_completion(client):
