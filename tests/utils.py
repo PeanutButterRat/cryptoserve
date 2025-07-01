@@ -12,7 +12,9 @@ def wrap_data(data: bytes) -> bytes:
     return header + data
 
 
-def create_mock_client(received_data: list[bytes | str], sent_data: list[bytes | str] | None) -> Client:
+def create_mock_client(
+    received_data: list[bytes | str], sent_data: list[bytes | str] | None
+) -> Client:
     received_data = [
         data.encode() if isinstance(data, str) else data for data in received_data
     ]
@@ -47,7 +49,9 @@ def create_mock_client(received_data: list[bytes | str], sent_data: list[bytes |
     return mock_client
 
 
-def run_exercise(test_data: list[tuple[list[bytes | str], list[bytes | str] | None]]) -> Callable:
+def run_exercise(
+    test_data: list[tuple[list[bytes | str], list[bytes | str] | None]],
+) -> Callable:
     def decorator(test: Callable):
         mock_clients = []
 
