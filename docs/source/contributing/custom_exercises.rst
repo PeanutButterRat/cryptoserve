@@ -34,24 +34,24 @@ Inside your Python file, you are required to implement one function:
    def your_custom_exercise(client: Client) -> None:
       pass
 
-This function should recieve one argument: an instance of the |Client| class, which is used to send
+This function should receive one argument: an instance of the |Client| class, which is used to send
 messages back and forth from the user. To be recognized by Cryptoserve as a valid exercise, the function header
 **must use type hints**, return **None**, and the function name **must not be prefixed with an underscore** (i.e. it must be public).
 
 .. note:: The name of your function will be converted from snakecase and used as the exercise name.
 
 
-Recieving Data and Checking for Errors
+Receiving Data and Checking for Errors
 --------------------------------------
 
 The two methods you are probably most interested in are:
 
-1. |expect| for recieving data.
+1. |expect| for receiving data.
 2. |send| for sending data.
 
-|expect| is used to read from the socket. It takes optional arguments for verifying the length of the data recieved
-as well as an function that is used to verify or transform the recieved data in some way. For instance, let's say
-you expected to recieve a pair of bytes that are coprime for some purpose. You could accomplish that like so:
+|expect| is used to read from the socket. It takes optional arguments for verifying the length of the data received
+as well as an function that is used to verify or transform the received data in some way. For instance, let's say
+you expected to receive a pair of bytes that are coprime for some purpose. You could accomplish that like so:
 
 .. code-block:: python
 

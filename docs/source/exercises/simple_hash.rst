@@ -70,7 +70,7 @@ Client-Server Protocol
 4. The **server** responds with an **OK** message.
 5. The **client applies f** to the hash and 2 bytes of input data.
 6. The **client** sends the hash to the **server**.
-7. The **server applies g** to the recieved hash and next chunk of data.
+7. The **server applies g** to the received hash and next chunk of data.
 8. The **server** sends the new hash back to the client.
 9. Steps **5 - 8 are repeated** until the input is exhausted.
 
@@ -157,34 +157,34 @@ Data Exchange
       participant Client
       participant Server
 
-      Client->>Server: 0x4170706C65
+      Client->>Server: 0x4170 706C 65
       Server-->>Client: OK
 
-      Client->>Server: 0x 4170706C65000000
+      Client->>Server: 0x4170 706C 6500 0000
       Server-->>Client: OK
 
-      Note over Client: h₀ ← 0x0505
+      Note over Client: h₀ = 0x0505
 
       loop chunk 1
-         Note over Client: h₁ ← f(0x0505, 0x4170) = 0x0703
+         Note over Client: h₁ = f(0x0505, 0x4170) = 0x3A58
          Client->>Server: h₁
       end
 
       loop chunk 2
-         Note over Server: h₂ ← g(0x0703, 0x706C) = 0x140D
+         Note over Server: h₂ = g(0x3A58, 0x706C) = 0x0AA0
          Client->>Server: h₂
       end
 
       loop chunk 3
-         Note over Client: h₃ ← f(0x140D, 0x6500) = 0x8E99
+         Note over Client: h₃ = f(0x0AA0, 0x6500) = 0x7BF1
          Client->>Server: h₃
       end
 
       loop chunk 4
-         Note over Server: h₄ ← g(0x8E99, 0x0000) = 0x181A
+         Note over Server: h₄ = g(0x7BF1, 0x0000) = 0x62AE
          Client->>Server: h₄
       end
 
-      Note over Client, Server: Final Hash = h₄ = 0x181A
+      Note over Client, Server: Final Hash = h₄ = 0x62AE
 
-Therefore, the **Simple Hash** of **Apple** is 0x181A.
+Therefore, the **Simple Hash** of **Apple** is 0x62AE.
