@@ -9,7 +9,7 @@ from cryptoserve.types import (
 )
 
 
-async def simple_hash(client: Client):
+async def simple_hash(client: Client) -> None:
     data = await client.expect(verifier=vertify_initial_data)
     await client.ok()
 
