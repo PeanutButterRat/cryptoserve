@@ -4,7 +4,7 @@ Interface for facilitating communication between the client and server.
 
 This module defines the ``Client`` class which abstracts the details away of the network protocol. It handles the details
 of encapsulating data for transmission so the developer can concern themselves with the data themselves instead of
-worrying about the protocol details. It also provides some utilities for error-checking data recieved from a client
+worrying about the protocol details. It also provides some utilities for error-checking data received from a client
 during the course of an exercise.
 """
 
@@ -21,7 +21,7 @@ class Client:
     """
     Interface for sending and receiving data from a user.
 
-    This class is used as an interface for sending and recieving data from a socket between the client and server.
+    This class is used as an interface for sending and receiving data from a socket between the client and server.
     It provides various utilities to abstract the underlying protocol information to send blobs of data back and
     forth in an asynchronous manner.
     """
@@ -70,7 +70,7 @@ class Client:
         entire_message = header + data
         await self._send(entire_message)
 
-    async def _recieve(self) -> bytes:
+    async def _receive(self) -> bytes:
         """
         Read bytes from the socket based on the next header.
 
@@ -109,7 +109,7 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        raw_bytes = await self._recieve()
+        raw_bytes = await self._receive()
 
         if length > 0 and len(raw_bytes) != length:
             raise DataTransmissionError(
@@ -142,7 +142,7 @@ class Client:
 
         if length > 0 and len(string) != length:
             raise DataTransmissionError(
-                f"expected string of length {length} but recieved string of length {len(string)})"
+                f"expected string of length {length} but received string of length {len(string)})"
             )
 
         return string

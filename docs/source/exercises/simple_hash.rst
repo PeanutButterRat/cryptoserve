@@ -70,7 +70,7 @@ Client-Server Protocol
 4. The **server** responds with an **OK** message.
 5. The **client applies f** to the hash and 2 bytes of input data.
 6. The **client** sends the hash to the **server**.
-7. The **server applies g** to the recieved hash and next chunk of data.
+7. The **server applies g** to the received hash and next chunk of data.
 8. The **server** sends the new hash back to the client.
 9. Steps **5 - 8 are repeated** until the input is exhausted.
 

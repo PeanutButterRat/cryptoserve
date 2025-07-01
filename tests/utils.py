@@ -12,9 +12,9 @@ def wrap_data(data: bytes) -> bytes:
     return header + data
 
 
-def create_mock_client(recieved_data, sent_data) -> Client:
-    recieved_data = [
-        data.encode() if isinstance(data, str) else data for data in recieved_data
+def create_mock_client(received_data: list[bytes | str], sent_data: list[bytes | str] | None) -> Client:
+    received_data = [
+        data.encode() if isinstance(data, str) else data for data in received_data
     ]
 
     forbidden_mock = AsyncMock(
@@ -23,7 +23,7 @@ def create_mock_client(recieved_data, sent_data) -> Client:
         )
     )
     mock_client = Client(forbidden_mock, forbidden_mock)
-    mock_client._recieve = AsyncMock(side_effect=recieved_data)
+    mock_client._receive = AsyncMock(side_effect=received_data)
     assertion_index = [0]
 
     if sent_data is not None:
@@ -47,12 +47,12 @@ def create_mock_client(recieved_data, sent_data) -> Client:
     return mock_client
 
 
-def run_exercise(test_data: list[tuple[list[bytes | str], list[bytes | str] | None]]):
+def run_exercise(test_data: list[tuple[list[bytes | str], list[bytes | str] | None]]) -> Callable:
     def decorator(test: Callable):
         mock_clients = []
 
-        for recieved_data, sent_data in test_data:
-            mock_client = create_mock_client(recieved_data, sent_data)
+        for received_data, sent_data in test_data:
+            mock_client = create_mock_client(received_data, sent_data)
             mock_clients.append(mock_client)
 
         test = pytest.mark.asyncio(test)

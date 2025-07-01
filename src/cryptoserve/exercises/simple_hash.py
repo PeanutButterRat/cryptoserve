@@ -67,7 +67,7 @@ def verify_padded_data(
         byte == 0x00 for byte in padded_data[-padding_amount:]
     ):
         raise InvalidPaddingError(
-            error="recieved data has invalid padding",
+            error="received data has invalid padding",
             explanation="The original data was padded improperly.",
             hints=[
                 "Is padding applied only to the end of the data to be hashed?",
@@ -84,11 +84,11 @@ def verify_padded_data(
 
 
 def verify_hash(data: bytes, hash: uint16) -> uint16:
-    recieved_hash = from_bytes(data)
+    received_hash = from_bytes(data)
 
-    if recieved_hash != hash:
+    if received_hash != hash:
         raise DataMismatchError(
-            error="recieved data does not match expected hash",
+            error="received data does not match expected hash",
             explanation="You made some mistake in hashing.",
             hints=[
                 "Are you applying the operations in the correct order as outlined in the documentation?",

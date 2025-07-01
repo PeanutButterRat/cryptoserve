@@ -118,7 +118,7 @@ Completing an Exercise
 Please refer to :ref:`listing` to see how to complete a specific exercise. In general,
 here are some tips that you might find useful in your work:
 
-- Before using data recieved from the server, check to see if the **error flag** is set. If so, print out the message and terminate your program.
+- Before using dataved from the server, check to see if the **error flag** is set. If so, print out the message and terminate your program.
 - Carefully read the instructions for a particular exercise before attempting to complete it.
 - Solve the exercise incrementally. Don't write a bunch of code all at once as this is difficult to debug. Instead, ensure each message exchange is working properly before moving on to the next.
 - If you are really stuck, it might be helpful to refer to Cryptoserve's source code for clarification (it *is* an open-source project, after all).
