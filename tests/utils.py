@@ -25,7 +25,7 @@ def create_mock_client(
         )
     )
     mock_client = Client(forbidden_mock, forbidden_mock)
-    mock_client._receive = AsyncMock(side_effect=received_data)
+    mock_client._read = AsyncMock(side_effect=received_data)
     assertion_index = [0]
 
     if sent_data is not None:
@@ -42,9 +42,9 @@ def create_mock_client(
             ), f"actual data sent on call {index} ({data}) does not match expected data sent ({expected})"
             assertion_index[0] += 1
 
-        mock_client._send = mock_send
+        mock_client._write = mock_send
     else:
-        mock_client._send = AsyncMock()
+        mock_client._write = AsyncMock()
 
     return mock_client
 

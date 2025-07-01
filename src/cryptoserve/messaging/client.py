@@ -40,7 +40,20 @@ class Client:
         self.reader = reader
         self.writer = writer
 
-    async def _send(self, data: bytes):
+    async def _read(self) -> bytes:
+        header = await self.reader.read(HEADER_LENGTH_BYTES)
+        data_length = int.from_bytes(header)
+        data = await self.reader.read(data_length)
+        return data
+
+    async def receive(self) -> bytes:
+        header = await self.reader.read(HEADER_LENGTH_BYTES)
+        data_length = int.from_bytes(header)
+        actual_data = await self.reader.read(data_length)
+
+        return actual_data
+
+    async def _write(self, data: bytes):
         """
         Write to the socket.
 
@@ -48,7 +61,7 @@ class Client:
         directly in order to make the class easier to mock during testing.
 
         Args:
-            data: The bytes to send.
+            data: The raw bytes to send.
         """
         self.writer.write(data)
         await self.writer.drain()
@@ -68,22 +81,7 @@ class Client:
             header[0] |= 1 << 7
 
         entire_message = header + data
-        await self._send(entire_message)
-
-    async def _receive(self) -> bytes:
-        """
-        Read bytes from the socket based on the next header.
-
-        No validation on the data is performed because this method simply uses the header to determine
-        message length and returns that number of bytes. For most uses you should probably use :meth:`expect` instead.
-
-        Returns:
-            bytes: Raw bytes read from the socket not including the message header.
-        """
-        header = await self.reader.read(HEADER_LENGTH_BYTES)
-        data_length = int.from_bytes(header)
-        data = await self.reader.read(data_length)
-        return data
+        await self._write(entire_message)
 
     async def expect(
         self,
@@ -109,7 +107,7 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        raw_bytes = await self._receive()
+        raw_bytes = await self._read()
 
         if length > 0 and len(raw_bytes) != length:
             raise DataTransmissionError(
