@@ -85,10 +85,15 @@ class Client:
         self.writer.write(data)
         await self.writer.drain()
 
-    async def send(self, data: bytes, server_flags: int = 0, exercise_flags: int = 0):
+    async def send(
+        self, data: bytes | str, server_flags: int = 0, exercise_flags: int = 0
+    ):
         """
         Send a collection of bytes to the client.
         """
+        if isinstance(data, str):
+            data = data.encode()
+
         message = add_header(data, server_flags, exercise_flags)
         await self._write(message)
 

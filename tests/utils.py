@@ -8,7 +8,7 @@ from cryptoserve.messaging import Client
 
 
 class MockClient(Client):
-    def __init__(self, received_data, sent_data):
+    def __init__(self, received_data, sent_data=None):
         forbidden_mock = AsyncMock(
             side_effect=RuntimeError(
                 "directly accessing the StreamReader or StreamWriter during a test is not allowed"
@@ -19,7 +19,7 @@ class MockClient(Client):
         self._read = AsyncMock()
         self._write = AsyncMock()
 
-        self.received_data = self._convert_messages_to_proper_tuples(
+        self.received_data = MockClient._convert_messages_to_proper_tuples(
             received_data, default_value=0
         )
         self.received_call_index = 0
@@ -27,13 +27,14 @@ class MockClient(Client):
         if sent_data is None:
             self.send = AsyncMock()
         else:
-            self.sent_data = self._convert_messages_to_proper_tuples(
+            self.sent_data = MockClient._convert_messages_to_proper_tuples(
                 sent_data, default_value=None
             )
             self.sent_call_index = 0
 
+    @classmethod
     def _convert_messages_to_proper_tuples(
-        self, messages: list[tuple | str | bytes], default_value: Any = None
+        cls, messages: list[tuple | str | bytes], default_value: Any = None
     ):
         tuples = []
 
@@ -54,7 +55,12 @@ class MockClient(Client):
 
         return tuples
 
-    async def send(self, data: bytes, server_flags: int = 0, exercise_flags: int = 0):
+    async def send(
+        self, data: bytes | str, server_flags: int = 0, exercise_flags: int = 0
+    ):
+        if isinstance(data, str):
+            data = data.encode()
+
         if self.sent_call_index >= len(self.sent_data):
             raise RuntimeError("ran out of sent data to verify")
 
