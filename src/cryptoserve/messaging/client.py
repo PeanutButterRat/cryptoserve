@@ -9,6 +9,7 @@ during the course of an exercise.
 """
 
 import asyncio
+import inspect
 from enum import IntFlag
 from typing import Any, Callable, Optional
 
@@ -119,11 +120,23 @@ class Client:
 
         if length > 0 and len(data) != length:
             raise DataTransmissionError(
-                f"expected {length} byte{'s' if length > 1 else ''} but received {len(raw_bytes)} instead"
+                f"expected {length} byte{'s' if length > 1 else ''} but received {len(data)} instead"
             )
 
         if verifier:
-            return verifier(data, **kwargs)
+            signature = inspect.signature(verifier)
+            arguments = {}
+
+            for key, value in [
+                ("received_data", data),
+                ("server_flags", server_flags),
+                ("exercise_flags", exercise_flags),
+            ]:
+                if key in signature.parameters:
+                    arguments[key] = value
+
+            return verifier(**arguments, **kwargs)
+
         else:
             return data
 

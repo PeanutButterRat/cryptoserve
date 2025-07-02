@@ -11,10 +11,10 @@ async def implementing_aes(client: Client) -> None:
     await client.expect(1, verify_sbox_implementation, original=byte)
 
 
-def verify_sbox_implementation(received: bytes, original: bytes) -> None:
+def verify_sbox_implementation(received_data: bytes, original: bytes) -> None:
     expected = sbox(original[0])
 
-    if expected != received[0]:
+    if expected != received_data[0]:
         raise DataMismatchError(
-            f"received byte {received[0]} does not match expected byte {expected}"
+            f"received byte {received_data[0]} does not match expected byte {expected}"
         )
