@@ -6,7 +6,7 @@ from Crypto.Util import Counter, Padding
 from cryptoserve.exercises.implementing_aes import implementing_aes
 from cryptoserve.messaging import Client
 from cryptoserve.types import DataMismatchError
-from tests.utils import run_exercise
+from tests.utils import simulate_exercise
 
 
 @pytest.mark.parametrize(
@@ -55,7 +55,7 @@ def test_ctr_mode_aes128_against_pycryptodome(key: int, iv: int, pt: int):
     assert actual == expected, "decryption does not behave properly"
 
 
-@run_exercise([(["\x00"], ["\x00"])])
+@simulate_exercise(received_data=["\x00"], sent_data=["\x00"])
 async def test_sbox_implementation(client: Client, monkeypatch):
     monkeypatch.setattr("os.urandom", lambda n: b"\x00" * n)
 

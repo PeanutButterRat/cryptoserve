@@ -9,6 +9,7 @@ during the course of an exercise.
 """
 
 import asyncio
+import inspect
 from enum import IntFlag
 from typing import Any, Callable, Optional
 
@@ -68,8 +69,8 @@ class Client:
     async def receive(self) -> bytes:
         header = await self._read(HEADER_LENGTH_BYTES)
         data_length, server_flags, exercise_flags = parse_header(header)
-        data = await self._read(data_length)
-        return data, server_flags, exercise_flags
+        received_data = await self._read(data_length)
+        return received_data, exercise_flags, server_flags
 
     async def _write(self, data: bytes):
         """
@@ -84,10 +85,15 @@ class Client:
         self.writer.write(data)
         await self.writer.drain()
 
-    async def send(self, data: bytes, server_flags: int = 0, exercise_flags: int = 0):
+    async def send(
+        self, data: bytes | str, server_flags: int = 0, exercise_flags: int = 0
+    ):
         """
         Send a collection of bytes to the client.
         """
+        if isinstance(data, str):
+            data = data.encode()
+
         message = add_header(data, server_flags, exercise_flags)
         await self._write(message)
 
@@ -115,17 +121,29 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        data, server_flags, exercise_flags = await self.receive()
+        received_data, exercise_flags, server_flags = await self.receive()
 
-        if length > 0 and len(data) != length:
+        if length > 0 and len(received_data) != length:
             raise DataTransmissionError(
-                f"expected {length} byte{'s' if length > 1 else ''} but received {len(raw_bytes)} instead"
+                f"expected {length} byte{'s' if length > 1 else ''} but received {len(received_data)} instead"
             )
 
         if verifier:
-            return verifier(data, **kwargs)
+            signature = inspect.signature(verifier)
+            arguments = {}
+
+            for key, value in [
+                ("received_data", received_data),
+                ("exercise_flags", exercise_flags),
+                ("server_flags", server_flags),
+            ]:
+                if key in signature.parameters:
+                    arguments[key] = value
+
+            return verifier(**arguments, **kwargs)
+
         else:
-            return data
+            return received_data
 
     async def expect_str(self, length: int = -1) -> str:
         """
