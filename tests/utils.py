@@ -8,7 +8,17 @@ from cryptoserve.messaging import Client
 
 
 class MockClient(Client):
-    def __init__(self, received_data, sent_data=None):
+    def __init__(
+        self,
+        received_data: list[tuple | str | bytes],
+        sent_data: list[tuple | str | bytes | None] = None,
+    ):
+        """A mocked client for testing purposes.
+
+        Args:
+            received_data: Data to return on regular calls to receive().
+            sent_data: Data to compare against regular calls to send().
+        """
         forbidden_mock = AsyncMock(
             side_effect=RuntimeError(
                 "directly accessing the StreamReader or StreamWriter during a test is not allowed"
@@ -34,7 +44,7 @@ class MockClient(Client):
 
     @classmethod
     def _convert_messages_to_proper_tuples(
-        cls, messages: list[tuple | str | bytes], default_value: Any = None
+        cls, messages: list[tuple | str | bytes | None], default_value: Any = None
     ):
         tuples = []
 
@@ -96,8 +106,73 @@ class MockClient(Client):
 
 
 def simulate_exercise(
-    received_data: list[bytes | str], sent_data: list[bytes | str] = None
+    received_data: list[tuple | bytes | str],
+    sent_data: list[tuple | bytes | str] = None,
 ) -> Callable:
+    """Decorator that sets up a Pytest function for simulating a networked exercise.
+
+    Use this decorator to simulate an exercise by bypassing traditional sockets and injecting
+    test data directly into a mocked client. It allows testing of client behavior without requiring
+    actual network communication.
+
+    Each argument can be given as a list of bytes (bytes to send/receive per call) or strings. Strings
+    are automatically encoded using UTF-8 and treated the same as bytes. Alternatively, you can specify
+    a tuple in the form (str | bytes, int | None, int | None). The first item is the data to send or receive,
+    and the second and third are the server and exercise flags, respectively. Any of these values can be
+    None, in which case they are ignored during validation.
+
+    If `sent_data` is None, no validation is performed on what the client sends. This can also be None
+    for individual elements in the `sent_data` list, meaning the corresponding call will not be checked.
+    Similarly, any flag field (server or exercise) can be None to skip validation for that flag.
+
+    Args:
+        received_data: A list of data elements the mock client will receive.
+            This simulates incoming messages from the server. Each subsequent call returns the next
+            value in the list, corresponding to a sequence of `Client.receive()` calls.
+
+        sent_data: A list of expected data that the client is
+            supposed to send during the exercise. Used for validating outbound communication.
+            If None, no validation is performed on outbound data.
+
+    Returns:
+        Callable: A decorated async Pytest test function with a mocked client injected as a parameter.
+
+    Examples:
+
+        ::
+
+            # Returns "hello".encode() on next call to receive() and checks if
+            # "world".encode() is sent on next call to send(). All flags are ignored.
+            @simulate_exercise(received_data=["hello"], sent_data=["world"])
+            async def test_echo(client):
+                await exercise(client)
+
+        ::
+
+            # Same as example above, but no encoding is performed. b"data1" and b"data2" are received as is.
+            # Calls to send() are ignored.
+            @simulate_exercise(received_data=[b"data1", b"data2"])
+            async def test_unchecked_send(client):
+                await exercise(client)
+
+        ::
+
+            # Regular strings are encoded as UTF-8, and the appropriate flags are returned in the calls
+            # to receive(). The server flags are ignored for correctness in the last call to client.send().
+            @simulate_exercise(
+                received_data=[
+                    ("welcome", 0b001, 0b010),
+                    ("next", 0b000, 0b011)
+                ],
+                sent_data=[
+                    ("ack", 0b100, None),  # Only data and exercise flags are checked for correctness (server flags ignored).
+                    None  # No validation for this call
+                ]
+            )
+            async def test_with_flags(client):
+                await exercise(client)
+    """
+
     def decorator(test: Callable):
         client = MockClient(received_data, sent_data)
         test = pytest.mark.asyncio(test)
