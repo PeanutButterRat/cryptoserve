@@ -69,8 +69,8 @@ class Client:
     async def receive(self) -> bytes:
         header = await self._read(HEADER_LENGTH_BYTES)
         data_length, server_flags, exercise_flags = parse_header(header)
-        data = await self._read(data_length)
-        return data, server_flags, exercise_flags
+        received_data = await self._read(data_length)
+        return received_data, exercise_flags, server_flags
 
     async def _write(self, data: bytes):
         """
@@ -116,11 +116,11 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        data, server_flags, exercise_flags = await self.receive()
+        received_data, exercise_flags, server_flags = await self.receive()
 
-        if length > 0 and len(data) != length:
+        if length > 0 and len(received_data) != length:
             raise DataTransmissionError(
-                f"expected {length} byte{'s' if length > 1 else ''} but received {len(data)} instead"
+                f"expected {length} byte{'s' if length > 1 else ''} but received {len(received_data)} instead"
             )
 
         if verifier:
@@ -128,9 +128,9 @@ class Client:
             arguments = {}
 
             for key, value in [
-                ("received_data", data),
-                ("server_flags", server_flags),
+                ("received_data", received_data),
                 ("exercise_flags", exercise_flags),
+                ("server_flags", server_flags),
             ]:
                 if key in signature.parameters:
                     arguments[key] = value
@@ -138,7 +138,7 @@ class Client:
             return verifier(**arguments, **kwargs)
 
         else:
-            return data
+            return received_data
 
     async def expect_str(self, length: int = -1) -> str:
         """
