@@ -9,12 +9,33 @@ during the course of an exercise.
 """
 
 import asyncio
+from enum import IntFlag
 from typing import Any, Callable, Optional
 
 from cryptoserve.types import DataTransmissionError
 
 HEADER_LENGTH_BYTES = 2
 OK_MESSAGE = "OK"
+
+
+class MessageFlags(IntFlag):
+    ERROR = 1 << 7
+
+
+def add_header(data: bytes, server_flags: int = 0, exercise_flags: int = 0) -> bytes:
+    header = bytearray(HEADER_LENGTH_BYTES)
+    header[:2] = server_flags, exercise_flags
+    header[2:] = len(data).to_bytes(2)
+
+    return bytes(header + data)
+
+
+def parse_header(header: bytes) -> tuple[int, int, int]:
+    assert len(header) == HEADER_LENGTH_BYTES
+    server_flags, exercise_flags = header[:2]
+    data_length = int.from_bytes(header[2:])
+
+    return data_length, server_flags, exercise_flags
 
 
 class Client:
@@ -40,18 +61,15 @@ class Client:
         self.reader = reader
         self.writer = writer
 
-    async def _read(self) -> bytes:
-        header = await self.reader.read(HEADER_LENGTH_BYTES)
-        data_length = int.from_bytes(header)
-        data = await self.reader.read(data_length)
+    async def _read(self, n: int) -> bytes:
+        data = await self.reader.read(n)
         return data
 
     async def receive(self) -> bytes:
-        header = await self.reader.read(HEADER_LENGTH_BYTES)
-        data_length = int.from_bytes(header)
-        actual_data = await self.reader.read(data_length)
-
-        return actual_data
+        header = await self._read(HEADER_LENGTH_BYTES)
+        data_length, server_flags, exercise_flags = parse_header(header)
+        data = await self._read(data_length)
+        return data, server_flags, exercise_flags
 
     async def _write(self, data: bytes):
         """
@@ -66,22 +84,12 @@ class Client:
         self.writer.write(data)
         await self.writer.drain()
 
-    async def send(self, data: bytes, is_error: bool = False):
+    async def send(self, data: bytes, server_flags: int = 0, exercise_flags: int = 0):
         """
         Send a collection of bytes to the client.
-
-        Args:
-            data: The bytes to send (header not included).
-            is_error: Whether the message should set the error flag. Defaults to False.
         """
-        data_length = len(data)
-        header = bytearray(data_length.to_bytes(HEADER_LENGTH_BYTES))
-
-        if is_error:
-            header[0] |= 1 << 7
-
-        entire_message = header + data
-        await self._write(entire_message)
+        message = add_header(data, server_flags, exercise_flags)
+        await self._write(message)
 
     async def expect(
         self,
@@ -107,17 +115,17 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        raw_bytes = await self._read()
+        data, server_flags, exercise_flags = await self.receive()
 
-        if length > 0 and len(raw_bytes) != length:
+        if length > 0 and len(data) != length:
             raise DataTransmissionError(
                 f"expected {length} byte{'s' if length > 1 else ''} but received {len(raw_bytes)} instead"
             )
 
         if verifier:
-            return verifier(raw_bytes, **kwargs)
+            return verifier(data, **kwargs)
         else:
-            return raw_bytes
+            return data
 
     async def expect_str(self, length: int = -1) -> str:
         """

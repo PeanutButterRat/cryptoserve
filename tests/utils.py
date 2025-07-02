@@ -24,27 +24,45 @@ def create_mock_client(
             "directly accessing the StreamReader or StreamWriter during a test is not allowed"
         )
     )
+
     mock_client = Client(forbidden_mock, forbidden_mock)
-    mock_client._read = AsyncMock(side_effect=received_data)
+    mock_client._read = AsyncMock()
+    mock_client._write = AsyncMock()
+    mock_client.receive = AsyncMock(
+        side_effect=[(data, None, None) for data in received_data]
+    )
     assertion_index = [0]
 
     if sent_data is not None:
         sent_data = [
             data.encode() if isinstance(data, str) else data for data in sent_data
         ]
-        sent_data = [wrap_data(data) for data in sent_data]
 
-        async def mock_send(data: bytes):
+        async def mock_send(
+            data: bytes, server_flags: int = 0, exercise_flags: int = 0
+        ):
             index = assertion_index[0]
-            expected = sent_data[index]
+            expected_data = sent_data[index]
+
+            if isinstance(expected_data, list) or isinstance(expected_data, tuple):
+                expected_data, expected_server_flags, expected_exercise_flags = (
+                    expected_data
+                )
+                assert (
+                    server_flags == expected_server_flags
+                ), f"actual server flags 0b{server_flags:b} does not match expected server flags 0b{expected_server_flags:b}"
+                assert (
+                    exercise_flags == expected_exercise_flags
+                ), f"actual exercise flags 0b{exercise_flags:b} does not match expected exercise flags 0b{expected_exercise_flags:b}"
+
             assert (
-                data == expected
-            ), f"actual data sent on call {index} ({data}) does not match expected data sent ({expected})"
+                data == expected_data
+            ), f"actual data sent ({data}) on call {index} does not match expected data sent ({expected_data})"
             assertion_index[0] += 1
 
-        mock_client._write = mock_send
+        mock_client.send = mock_send
     else:
-        mock_client._write = AsyncMock()
+        mock_client.send = AsyncMock()
 
     return mock_client
 
