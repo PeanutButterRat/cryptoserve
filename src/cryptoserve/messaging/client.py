@@ -15,7 +15,7 @@ from typing import Any, Callable, Optional
 
 from cryptoserve.types import DataTransmissionError
 
-HEADER_LENGTH_BYTES = 2
+HEADER_LENGTH_BYTES = 4
 OK_MESSAGE = "OK"
 
 
@@ -63,7 +63,7 @@ class Client:
         self.writer = writer
 
     async def _read(self, n: int) -> bytes:
-        data = await self.reader.read(n)
+        data = await self.reader.readexactly(n)
         return data
 
     async def receive(self) -> bytes:
@@ -86,7 +86,10 @@ class Client:
         await self.writer.drain()
 
     async def send(
-        self, data: bytes | str, server_flags: int = 0, exercise_flags: int = 0
+        self,
+        data: bytes | str,
+        server_flags: int | MessageFlags = 0,
+        exercise_flags: int | MessageFlags = 0,
     ):
         """
         Send a collection of bytes to the client.
@@ -94,7 +97,7 @@ class Client:
         if isinstance(data, str):
             data = data.encode()
 
-        message = add_header(data, server_flags, exercise_flags)
+        message = add_header(data, int(server_flags), int(exercise_flags))
         await self._write(message)
 
     async def expect(
@@ -162,7 +165,9 @@ class Client:
         Raises:
             ValueError: If the decoded string's length does not match the expected length.
         """
-        string = await self.expect(verifier=lambda bytes: bytes.decode())
+        string = await self.expect(
+            verifier=lambda received_data: received_data.decode()
+        )
 
         if length > 0 and len(string) != length:
             raise DataTransmissionError(
@@ -182,7 +187,7 @@ class Client:
             message: A human-readable error message to send to the client.
         """
         raw_bytes = message.encode()
-        await self.send(raw_bytes, True)
+        await self.send(raw_bytes, server_flags=MessageFlags.ERROR)
 
     async def ok(self):
         """
