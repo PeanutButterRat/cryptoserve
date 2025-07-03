@@ -81,17 +81,17 @@ class MockClient(Client):
         if expected_data is not None:
             assert (
                 data == expected_data
-            ), f"actual data sent ({data}) on call {self.sent_call_index} does not match expected data sent ({expected_data})"
+            ), f"actual data sent ({data}) sent on call {self.sent_call_index} does not match expected data sent ({expected_data})"
 
         if expected_server_flags is not None:
             assert (
                 server_flags == expected_server_flags
-            ), f"actual server flags 0b{server_flags:b} does not match expected server flags 0b{expected_server_flags:b}"
+            ), f"actual server flags (0b{server_flags:b}) sent on call {self.sent_call_index} does not match expected server flags (0b{expected_server_flags:b})"
 
         if expected_exercise_flags is not None:
             assert (
                 exercise_flags == expected_exercise_flags
-            ), f"actual exercise flags 0b{exercise_flags:b} does not match expected exercise flags 0b{expected_exercise_flags:b}"
+            ), f"actual exercise flags (0b{exercise_flags:b}) sent on call {self.sent_call_index} does not match expected exercise flags (0b{expected_exercise_flags:b})"
 
         self.sent_call_index += 1
 
