@@ -21,7 +21,6 @@ def test_tuple_conversion(messages, expected):
     tuples = MockClient._convert_messages_to_proper_tuples(messages)
 
     for actual, expected in zip(tuples, expected):
-        print(actual, expected)
         assert actual == expected
 
 

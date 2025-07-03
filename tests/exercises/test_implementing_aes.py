@@ -1,3 +1,5 @@
+import random
+
 import aes
 import pytest
 from Crypto.Cipher import AES
@@ -55,14 +57,18 @@ def test_ctr_mode_aes128_against_pycryptodome(key: int, iv: int, pt: int):
     assert actual == expected, "decryption does not behave properly"
 
 
+deterministic_patches = {
+    "os.urandom": lambda n: b"\x00" * n,
+    "random.randint": lambda *_: 1,
+}
+
+
 @simulate_exercise(
     sent_data=["\x00" * 32, "\x00"],
     received_data=["\x00" * 16, "\x64"],
+    patches=deterministic_patches,
 )
-async def test_sbox_implementation(client: Client, monkeypatch):
-    monkeypatch.setattr("os.urandom", lambda n: b"\x00" * n)
-    monkeypatch.setattr("random.randint", lambda *_: 1)
-
+async def test_sbox_implementation(client: Client):
     with pytest.raises(DataMismatchError):
         await implementing_aes(client)
 
@@ -76,9 +82,7 @@ async def test_sbox_implementation(client: Client, monkeypatch):
         ("\x00" * 16, None, 4),
     ],
     received_data=["\x00" * 16, "\x63", "\x63" * 16, "\x00" * 16, "\x00" * 16],
+    patches=deterministic_patches,
 )
-async def test_successful_completion(client: Client, monkeypatch):
-    monkeypatch.setattr("os.urandom", lambda n: b"\x00" * n)
-    monkeypatch.setattr("random.randint", lambda *_: 1)
-
+async def test_successful_completion(client: Client):
     await implementing_aes(client)

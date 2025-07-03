@@ -108,6 +108,7 @@ class MockClient(Client):
 def simulate_exercise(
     received_data: list[tuple | bytes | str],
     sent_data: list[tuple | bytes | str] = None,
+    patches: dict[str, Callable] = None,
 ) -> Callable:
     """Decorator that sets up a Pytest function for simulating a networked exercise.
 
@@ -133,6 +134,10 @@ def simulate_exercise(
         sent_data: A list of expected data that the client is
             supposed to send during the exercise. Used for validating outbound communication.
             If None, no validation is performed on outbound data.
+
+        patches: A dictionary of objects to `monkeypatch <https://docs.pytest.org/en/stable/how-to/monkeypatch.html>`_
+            during the test. Each key is a string that represents the object to patch and each value is a function to
+            call instead of the original target. You can use this to remove randomness from an exercise to test deterministically.
 
     Returns:
         Callable: A decorated async Pytest test function with a mocked client injected as a parameter.
@@ -168,15 +173,35 @@ def simulate_exercise(
                     ("ack", 0b100, None),  # Only data and exercise flags are checked for correctness (server flags ignored).
                     None  # No validation for this call
                 ]
+                patches={
+                    "random.randint": lambda *_: 0,  # Modify any calls to random.randint() to always return 0 to make the test deterministic.
+                }
             )
             async def test_with_flags(client):
                 await exercise(client)
     """
 
-    def decorator(test: Callable):
-        client = MockClient(received_data, sent_data)
-        test = pytest.mark.asyncio(test)
-        test = pytest.mark.parametrize("client", [client])(test)
-        return test
+    client = MockClient(received_data, sent_data)
+
+    if patches:
+
+        def decorator(test: Callable):
+            @pytest.mark.asyncio
+            @pytest.mark.parametrize("client", [client])
+            async def inner(client, monkeypatch):
+                for target, patch in patches.items():
+                    monkeypatch.setattr(target, patch)
+
+                await test(client)
+
+            return inner
+
+    else:
+
+        def decorator(test: Callable):
+            client = MockClient(received_data, sent_data)
+            test = pytest.mark.asyncio(test)
+            test = pytest.mark.parametrize("client", [client])(test)
+            return test
 
     return decorator
