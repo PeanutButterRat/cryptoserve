@@ -1,7 +1,7 @@
-.. _custom_hash_protocol:
+.. _simple_hash:
 
 Simple Hash
-====================
+===========
 
 The following describes a toy hash algorithm intuitively named **Simple Hash**.
 This algorithm processes input data in pairs of bytes and alternates between two 

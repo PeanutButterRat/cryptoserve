@@ -15,3 +15,4 @@ Each exercise is designed to highlight a specific cryptographic concept.
    :maxdepth: 1
 
    simple_hash
+   implementing_aes
