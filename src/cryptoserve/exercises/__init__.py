@@ -68,5 +68,5 @@ def _has_exercise_signature(function: callable):
     return (
         len(parameters) == 1
         and hints.get(parameters[0].name) is Client
-        and hints.get("return") is None
+        and hints.get("return") == type(None)
     )

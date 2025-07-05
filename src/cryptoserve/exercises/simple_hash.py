@@ -9,7 +9,7 @@ from cryptoserve.types import (
 )
 
 
-async def simple_hash(client: Client):
+async def simple_hash(client: Client) -> None:
     data = await client.expect(verifier=vertify_initial_data)
     await client.ok()
 
@@ -38,24 +38,24 @@ def g(a: uint16, b: uint16):
     return a >> 1
 
 
-def vertify_initial_data(data: bytes) -> bytes:
-    if not len(data) <= 255:
+def vertify_initial_data(received_data: bytes) -> bytes:
+    if not len(received_data) <= 255:
         raise InvalidLengthError(
             error="input data is too large",
             explanation="The data you sent was too large in size for Simple Hash to handle. Recall that the length must be representable by a single byte.",
             hints=["Are you sending less than 256 bytes of input data?"],
         )
 
-    return data
+    return received_data
 
 
 def verify_padded_data(
-    padded_data: bytes, initial_data: bytes
+    received_data: bytes, initial_data: bytes
 ) -> tuple[list[tuple[bytes]], int]:
 
     padding_amount = 4 - len(initial_data) % 4
 
-    if len(padded_data) != len(initial_data) + padding_amount:
+    if len(received_data) != len(initial_data) + padding_amount:
         raise InvalidPaddingError(
             explanation="The padded data has the wrong amount of padding.",
             hints=[
@@ -63,8 +63,8 @@ def verify_padded_data(
             ],
         )
 
-    if padded_data.find(initial_data) != 0 or not all(
-        byte == 0x00 for byte in padded_data[-padding_amount:]
+    if received_data.find(initial_data) != 0 or not all(
+        byte == 0x00 for byte in received_data[-padding_amount:]
     ):
         raise InvalidPaddingError(
             error="received data has invalid padding",
@@ -77,14 +77,14 @@ def verify_padded_data(
         )
 
     chunks = list(
-        from_bytes(chunk) for chunk in zip(padded_data[::2], padded_data[1::2])
+        from_bytes(chunk) for chunk in zip(received_data[::2], received_data[1::2])
     )
 
     return chunks
 
 
-def verify_hash(data: bytes, hash: uint16) -> uint16:
-    received_hash = from_bytes(data)
+def verify_hash(received_data: bytes, hash: uint16) -> uint16:
+    received_hash = from_bytes(received_data)
 
     if received_hash != hash:
         raise DataMismatchError(

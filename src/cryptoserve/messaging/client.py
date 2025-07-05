@@ -9,12 +9,34 @@ during the course of an exercise.
 """
 
 import asyncio
+import inspect
+from enum import IntFlag
 from typing import Any, Callable, Optional
 
 from cryptoserve.types import DataTransmissionError
 
-HEADER_LENGTH_BYTES = 2
+HEADER_LENGTH_BYTES = 4
 OK_MESSAGE = "OK"
+
+
+class MessageFlags(IntFlag):
+    ERROR = 1 << 7
+
+
+def add_header(data: bytes, server_flags: int = 0, exercise_flags: int = 0) -> bytes:
+    header = bytearray(HEADER_LENGTH_BYTES)
+    header[:2] = server_flags, exercise_flags
+    header[2:] = len(data).to_bytes(2)
+
+    return bytes(header + data)
+
+
+def parse_header(header: bytes) -> tuple[int, int, int]:
+    assert len(header) == HEADER_LENGTH_BYTES
+    server_flags, exercise_flags = header[:2]
+    data_length = int.from_bytes(header[2:])
+
+    return data_length, server_flags, exercise_flags
 
 
 class Client:
@@ -40,7 +62,17 @@ class Client:
         self.reader = reader
         self.writer = writer
 
-    async def _send(self, data: bytes):
+    async def _read(self, n: int) -> bytes:
+        data = await self.reader.readexactly(n)
+        return data
+
+    async def receive(self) -> bytes:
+        header = await self._read(HEADER_LENGTH_BYTES)
+        data_length, server_flags, exercise_flags = parse_header(header)
+        received_data = await self._read(data_length)
+        return received_data, exercise_flags, server_flags
+
+    async def _write(self, data: bytes):
         """
         Write to the socket.
 
@@ -48,42 +80,25 @@ class Client:
         directly in order to make the class easier to mock during testing.
 
         Args:
-            data: The bytes to send.
+            data: The raw bytes to send.
         """
         self.writer.write(data)
         await self.writer.drain()
 
-    async def send(self, data: bytes, is_error: bool = False):
+    async def send(
+        self,
+        data: bytes | str,
+        server_flags: int | MessageFlags = 0,
+        exercise_flags: int | MessageFlags = 0,
+    ):
         """
         Send a collection of bytes to the client.
-
-        Args:
-            data: The bytes to send (header not included).
-            is_error: Whether the message should set the error flag. Defaults to False.
         """
-        data_length = len(data)
-        header = bytearray(data_length.to_bytes(HEADER_LENGTH_BYTES))
+        if isinstance(data, str):
+            data = data.encode()
 
-        if is_error:
-            header[0] |= 1 << 7
-
-        entire_message = header + data
-        await self._send(entire_message)
-
-    async def _receive(self) -> bytes:
-        """
-        Read bytes from the socket based on the next header.
-
-        No validation on the data is performed because this method simply uses the header to determine
-        message length and returns that number of bytes. For most uses you should probably use :meth:`expect` instead.
-
-        Returns:
-            bytes: Raw bytes read from the socket not including the message header.
-        """
-        header = await self.reader.read(HEADER_LENGTH_BYTES)
-        data_length = int.from_bytes(header)
-        data = await self.reader.read(data_length)
-        return data
+        message = add_header(data, int(server_flags), int(exercise_flags))
+        await self._write(message)
 
     async def expect(
         self,
@@ -109,17 +124,29 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        raw_bytes = await self._receive()
+        received_data, exercise_flags, server_flags = await self.receive()
 
-        if length > 0 and len(raw_bytes) != length:
+        if length > 0 and len(received_data) != length:
             raise DataTransmissionError(
-                f"expected {length} bytes but received {len(raw_bytes)} instead"
+                f"expected {length} byte{'s' if length > 1 else ''} but received {len(received_data)} instead"
             )
 
         if verifier:
-            return verifier(raw_bytes, **kwargs)
+            signature = inspect.signature(verifier)
+            arguments = {}
+
+            for key, value in [
+                ("received_data", received_data),
+                ("exercise_flags", exercise_flags),
+                ("server_flags", server_flags),
+            ]:
+                if key in signature.parameters:
+                    arguments[key] = value
+
+            return verifier(**arguments, **kwargs)
+
         else:
-            return raw_bytes
+            return received_data
 
     async def expect_str(self, length: int = -1) -> str:
         """
@@ -138,7 +165,9 @@ class Client:
         Raises:
             ValueError: If the decoded string's length does not match the expected length.
         """
-        string = await self.expect(verifier=lambda bytes: bytes.decode())
+        string = await self.expect(
+            verifier=lambda received_data: received_data.decode()
+        )
 
         if length > 0 and len(string) != length:
             raise DataTransmissionError(
@@ -158,7 +187,7 @@ class Client:
             message: A human-readable error message to send to the client.
         """
         raw_bytes = message.encode()
-        await self.send(raw_bytes, True)
+        await self.send(raw_bytes, server_flags=MessageFlags.ERROR)
 
     async def ok(self):
         """
