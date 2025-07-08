@@ -24,6 +24,14 @@ argparser.add_argument(
     "--port", "-p", type=int, default=5050, help="port number to bind to"
 )
 
+argparser.add_argument(
+    "--timeout",
+    "-t",
+    type=int,
+    default=60,
+    help="time in seconds the server waits for a response before closing an unresponsive connection",
+)
+
 
 def main():
     args = argparser.parse_args()
@@ -31,4 +39,4 @@ def main():
     if not (0 <= args.port <= 65535):
         argparser.error("port must be in range 0-65535")
 
-    asyncio.run(serve(args.host, args.port))
+    asyncio.run(serve(args.host, args.port, args.timeout))

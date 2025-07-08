@@ -48,7 +48,12 @@ class Client:
     forth in an asynchronous manner.
     """
 
-    def __init__(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    def __init__(
+        self,
+        reader: asyncio.StreamReader,
+        writer: asyncio.StreamWriter,
+        timeout: int = 5,
+    ):
         """
         Constructor method.
 
@@ -61,16 +66,19 @@ class Client:
         """
         self.reader = reader
         self.writer = writer
+        self.timeout = timeout
 
     async def _read(self, n: int) -> bytes:
-        data = await self.reader.readexactly(n)
-        return data
+        async with asyncio.timeout(self.timeout):
+            data = await self.reader.readexactly(n)
+            return data
 
     async def receive(self) -> bytes:
-        header = await self._read(HEADER_LENGTH_BYTES)
-        data_length, server_flags, exercise_flags = parse_header(header)
-        received_data = await self._read(data_length)
-        return received_data, exercise_flags, server_flags
+        async with asyncio.timeout(self.timeout):
+            header = await self._read(HEADER_LENGTH_BYTES)
+            data_length, server_flags, exercise_flags = parse_header(header)
+            received_data = await self._read(data_length)
+            return received_data, exercise_flags, server_flags
 
     async def _write(self, data: bytes):
         """
@@ -82,8 +90,9 @@ class Client:
         Args:
             data: The raw bytes to send.
         """
-        self.writer.write(data)
-        await self.writer.drain()
+        async with asyncio.timeout(self.timeout):
+            self.writer.write(data)
+            await self.writer.drain()
 
     async def send(
         self,
@@ -94,11 +103,12 @@ class Client:
         """
         Send a collection of bytes to the client.
         """
-        if isinstance(data, str):
-            data = data.encode()
+        async with asyncio.timeout(self.timeout):
+            if isinstance(data, str):
+                data = data.encode()
 
-        message = add_header(data, int(server_flags), int(exercise_flags))
-        await self._write(message)
+            message = add_header(data, int(server_flags), int(exercise_flags))
+            await self._write(message)
 
     async def expect(
         self,
@@ -124,29 +134,30 @@ class Client:
         Raises:
             DataTransmissionError: If the message length does not match the expected length.
         """
-        received_data, exercise_flags, server_flags = await self.receive()
+        async with asyncio.timeout(self.timeout):
+            received_data, exercise_flags, server_flags = await self.receive()
 
-        if length > 0 and len(received_data) != length:
-            raise DataTransmissionError(
-                f"expected {length} byte{'s' if length > 1 else ''} but received {len(received_data)} instead"
-            )
+            if length > 0 and len(received_data) != length:
+                raise DataTransmissionError(
+                    f"expected {length} byte{'s' if length > 1 else ''} but received {len(received_data)} instead"
+                )
 
-        if verifier:
-            signature = inspect.signature(verifier)
-            arguments = {}
+            if verifier:
+                signature = inspect.signature(verifier)
+                arguments = {}
 
-            for key, value in [
-                ("received_data", received_data),
-                ("exercise_flags", exercise_flags),
-                ("server_flags", server_flags),
-            ]:
-                if key in signature.parameters:
-                    arguments[key] = value
+                for key, value in [
+                    ("received_data", received_data),
+                    ("exercise_flags", exercise_flags),
+                    ("server_flags", server_flags),
+                ]:
+                    if key in signature.parameters:
+                        arguments[key] = value
 
-            return verifier(**arguments, **kwargs)
+                return verifier(**arguments, **kwargs)
 
-        else:
-            return received_data
+            else:
+                return received_data
 
     async def expect_str(self, length: int = -1) -> str:
         """
@@ -165,16 +176,17 @@ class Client:
         Raises:
             ValueError: If the decoded string's length does not match the expected length.
         """
-        string = await self.expect(
-            verifier=lambda received_data: received_data.decode()
-        )
-
-        if length > 0 and len(string) != length:
-            raise DataTransmissionError(
-                f"expected string of length {length} but received string of length {len(string)})"
+        async with asyncio.timeout(self.timeout):
+            string = await self.expect(
+                verifier=lambda received_data: received_data.decode()
             )
 
-        return string
+            if length > 0 and len(string) != length:
+                raise DataTransmissionError(
+                    f"expected string of length {length} but received string of length {len(string)})"
+                )
+
+            return string
 
     async def error(self, message: str):
         """
@@ -186,8 +198,9 @@ class Client:
         Args:
             message: A human-readable error message to send to the client.
         """
-        raw_bytes = message.encode()
-        await self.send(raw_bytes, server_flags=MessageFlags.ERROR)
+        async with asyncio.timeout(self.timeout):
+            raw_bytes = message.encode()
+            await self.send(raw_bytes, server_flags=MessageFlags.ERROR)
 
     async def ok(self):
         """
@@ -196,5 +209,6 @@ class Client:
         Sends the string "OK" to the client. Use this to confirm data sent by the client
         when no other response is applicable.
         """
-        raw_bytes = OK_MESSAGE.encode()
-        await self.send(raw_bytes)
+        async with asyncio.timeout(self.timeout):
+            raw_bytes = OK_MESSAGE.encode()
+            await self.send(raw_bytes)

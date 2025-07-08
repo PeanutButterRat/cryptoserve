@@ -34,3 +34,7 @@ class DataMismatchError(ExerciseError):
 
 class DataTransmissionError(ExerciseError):
     pass
+
+
+class ClientTimeoutError(ExerciseError):
+    pass
