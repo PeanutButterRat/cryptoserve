@@ -17,7 +17,7 @@ argparser = argparse.ArgumentParser(
 )
 
 argparser.add_argument(
-    "--host", type=str, default="127.0.0.1", help="host address to bind to"
+    "--host", type=str, default="0.0.0.0", help="host address to bind to"
 )
 
 argparser.add_argument(
@@ -40,3 +40,7 @@ def main():
         argparser.error("port must be in range 0-65535")
 
     asyncio.run(serve(args.host, args.port, args.timeout))
+
+
+if __name__ == "__main__":
+    main()

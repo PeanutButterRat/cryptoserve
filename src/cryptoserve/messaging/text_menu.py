@@ -63,7 +63,7 @@ class TextMenu:
         content_width = total_width - 2 * (self.horizontal_padding_spaces + 1)
         actual_lines = []
         vertical_padding_line = self._format_line("", content_width)
-        bottom_line = f"+{"=" * (total_width - 2)}+"
+        bottom_line = f"+{'=' * (total_width - 2)}+"
 
         for section in self._sections.values():
             actual_lines.append(self._format_section_title(section.title, total_width))
