@@ -1,10 +1,8 @@
-import math
 import random
 import time
-from collections.abc import Generator
 
 from cryptoserve.messaging import Client
-from cryptoserve.types.errors import InvalidParameterError
+from cryptoserve.types.errors import ExerciseError, InvalidParameterError
 
 MAX_ROUNDS = 10
 STARTING_MONEY = 100
@@ -87,7 +85,15 @@ async def red_dog(client: Client) -> None:
 
         rounds_completed += 1
 
-    await client.send(money_remaining.to_bytes(4))
+    if money_remaining < TARGET_MONEY:
+        raise ExerciseError(
+            error="failed to hit the target goal",
+            explanation=f"You failed to hit ${TARGET_MONEY} in under {MAX_ROUNDS} rounds. You only acheived ${money_remaining}.",
+            hints=[
+                "Are you betting enough money each round to be able to hit the target?",
+                "Are you leveraging your knowledge of LCG's to accurately predict the next value?",
+            ],
+        )
 
 
 def calculate_card_value(card: int) -> int:

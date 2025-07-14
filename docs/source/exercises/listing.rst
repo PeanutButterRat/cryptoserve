@@ -16,3 +16,4 @@ Each exercise is designed to highlight a specific cryptographic concept.
 
    simple_hash
    implementing_aes
+   red_dog

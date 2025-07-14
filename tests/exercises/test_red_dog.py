@@ -25,17 +25,13 @@ class MockGenerator:
         pass
 
 
-@simulate_exercise(
-    received_data=[EIGHT_HUNDRED]
-)
+@simulate_exercise(received_data=[EIGHT_HUNDRED])
 async def test_invalid_bet(client: Client):
     with pytest.raises(InvalidParameterError):
         await red_dog(client)
 
 
-@simulate_exercise(
-    received_data=[ONE_HUNDRED, "neither_inside_nor_outside"]
-)
+@simulate_exercise(received_data=[ONE_HUNDRED, "neither_inside_nor_outside"])
 async def test_invalid_guess(client: Client):
     with pytest.raises(InvalidParameterError):
         await red_dog(client)
