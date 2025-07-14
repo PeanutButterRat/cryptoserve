@@ -38,3 +38,7 @@ class DataTransmissionError(ExerciseError):
 
 class ClientTimeoutError(ExerciseError):
     pass
+
+
+class InvalidParameterError(ExerciseError):
+    pass
