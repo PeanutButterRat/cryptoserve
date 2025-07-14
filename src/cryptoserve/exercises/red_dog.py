@@ -1,8 +1,13 @@
 import random
 import time
+from enum import IntFlag
 
 from cryptoserve.messaging import Client
-from cryptoserve.types.errors import ExerciseError, InvalidParameterError
+from cryptoserve.types.errors import (
+    ExerciseError,
+    InvalidLengthError,
+    InvalidParameterError,
+)
 
 MAX_ROUNDS = 10
 STARTING_MONEY = 100
@@ -11,8 +16,8 @@ TARGET_MONEY = 1_000
 CARDS_PER_SUIT = 13
 CARDS_PER_DECK = 52
 MODULUS = 256
-
-from enum import IntFlag
+INSIDE_GUESS = "I"
+OUTSIDE_GUESS = "O"
 
 
 class RedDogExerciseFlags(IntFlag):
@@ -60,17 +65,18 @@ async def red_dog(client: Client) -> None:
 
     while 0 < money_remaining < TARGET_MONEY and rounds_completed < MAX_ROUNDS:
         await client.send(money_remaining.to_bytes(2))
-        bet = await client.expect(verifier=verify_bet, money_remaining=money_remaining)
-
         dealt_cards = deal()
-
         message = dealt_cards[0].to_bytes(4) + dealt_cards[1].to_bytes(4)
         await client.send(message)
 
-        guess = await client.expect(verifier=verify_guess)
+        bet, guess = await client.expect(
+            verifier=verify_bet, length=3, money_remaining=money_remaining
+        )
 
         low_value, high_value, final_value = map(calculate_card_value, dealt_cards)
-        correct_guess = "inside" if low_value < final_value < high_value else "outside"
+        correct_guess = (
+            INSIDE_GUESS if low_value < final_value < high_value else OUTSIDE_GUESS
+        )
 
         if guess == correct_guess:
             money_remaining += bet
@@ -112,7 +118,13 @@ def verify_guess(received_data: bytes) -> str:
 
 
 def verify_bet(received_data: bytes, money_remaining: int) -> int:
-    bet = int.from_bytes(received_data)
+    bet = int.from_bytes(received_data[:2])
+    guess = received_data[2:].decode().upper()
+
+    if guess not in [INSIDE_GUESS, OUTSIDE_GUESS]:
+        raise InvalidParameterError(
+            error=f"guess must be {INSIDE_GUESS} or {OUTSIDE_GUESS}"
+        )
 
     if bet < 0:
         raise InvalidParameterError(
@@ -126,7 +138,7 @@ def verify_bet(received_data: bytes, money_remaining: int) -> int:
             explanation=f"You don't have enough money to cover your bet. You tried to place a ${bet} bet with only ${money_remaining} remaining.",
         )
 
-    return bet
+    return bet, guess
 
 
 def deal():

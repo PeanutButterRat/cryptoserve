@@ -36,11 +36,10 @@ You must do this by exploiting the properties of a LCG to predict the next value
 The protocol works by the following:
 
 1. The **server** starts a round by sending the remaining cash as a two-byte unsigned integer.
-2. The **client** responds with their bet for the next round. This must be less than the amount of money they have remaining.
-3. The **server** deals two cards and sends them to the client. These are represented as single bytes.
-4. The **client** reponds with their guess of "inside" or "outside" encoded as a string.
-5. The **server** deals the last card and sends it back to the client with the appropriate flag set depending on the outcome.
-6. Steps **1 - 5** are repeated until the client hits the goal, runs out of money, or runs out of rounds. 
+2. The **server** deals two cards and sends them to the client. These are represented as single bytes.
+3. The **client** responds with their bet for the next round. The first two bytes of this response is their monetary bet while the third bet is either **"I"** for inside the spread or **"O"** for outside the spread.
+4. The **server** deals the last card and sends it back to the client with the appropriate flag set depending on the outcome.
+5. Steps **1 - 4** are repeated until the client hits the goal, runs out of money, or runs out of rounds. 
 
 
 Flag Meanings
