@@ -1,5 +1,8 @@
+import pytest
+
 from cryptoserve.exercises.red_dog import red_dog
 from cryptoserve.messaging import Client
+from cryptoserve.types.errors import InvalidParameterError
 from tests.utils import simulate_exercise
 
 ONE_HUNDRED = b"\x00d"
@@ -20,6 +23,22 @@ class MockGenerator:
 
     def seed(self):
         pass
+
+
+@simulate_exercise(
+    received_data=[EIGHT_HUNDRED]
+)
+async def test_invalid_bet(client: Client):
+    with pytest.raises(InvalidParameterError):
+        await red_dog(client)
+
+
+@simulate_exercise(
+    received_data=[ONE_HUNDRED, "neither_inside_nor_outside"]
+)
+async def test_invalid_guess(client: Client):
+    with pytest.raises(InvalidParameterError):
+        await red_dog(client)
 
 
 @simulate_exercise(
