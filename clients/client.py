@@ -1,7 +1,25 @@
 import argparse
+import json
 import socket
+from enum import IntFlag
+
+from rich import box
+from rich.align import Align
+from rich.console import Console, Group
+from rich.panel import Panel
+from rich.text import Text
 
 HEADER_LENGTH = 4
+
+
+class MessageFlags(IntFlag):
+    ERROR = 1 << 7
+
+
+class ServerError(Exception):
+    def __init__(self, json, *args):
+        self.json = json
+        super().__init__(*args)
 
 
 class Server:
@@ -11,7 +29,10 @@ class Server:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
 
-    def send(self, data: bytes, server_flags: int = 0, exercise_flags: int = 0):
+    def send(self, data: bytes | str, server_flags: int = 0, exercise_flags: int = 0):
+        if isinstance(data, str):
+            data = data.encode()
+
         message_length = len(data).to_bytes(2)
         header = bytes([server_flags, exercise_flags, *message_length])
         message = header + data
@@ -27,6 +48,11 @@ class Server:
         message = self.socket.recv(message_length)
         assert len(message) == message_length, "received an invalid message"
 
+        if server_flags & MessageFlags.ERROR:
+            data = message.decode()
+            data = json.loads(data)
+            raise ServerError(json=data)
+
         return message if not include_flags else (server_flags, exercise_flags, message)
 
     def __enter__(self):
@@ -34,6 +60,50 @@ class Server:
 
     def __exit__(self, type, value, traceback):
         self.socket.close()
+
+
+def print_error(error: dict):
+    error_msg = Text()
+    error_msg.append(error.get("Error", "None"))
+
+    hints = error.get("hints", [])
+    hints = "\n".join([f"• {hint}" for hint in hints])
+    explanation = error.get("explanation", "")
+    error = error.get("error", "")
+
+    sections = [
+        ("Error", error, "indian_red"),
+        ("Explanation", explanation, "green"),
+        ("Hints", hints, "yellow"),
+    ]
+    panels = []
+
+    for title, body, color in sections:
+        panel = Panel(
+            Align.center(Text(body), style=color),
+            title=f" {title} ",
+            title_align="center",
+            border_style=color,
+            box=box.ROUNDED,
+            padding=(1, 1),
+        )
+        panels.append(panel)
+
+    error = Panel(
+        Group(*panels),
+        title=" Error Report ",
+        title_align="center",
+        border_style="bright_black",
+        box=box.ROUNDED,
+        padding=(1, 1),
+    )
+
+    console = Console()
+    console.print(error)
+
+
+def simple_hash(server: Server) -> None:
+    raise NotImplementedError
 
 
 def main():
@@ -50,13 +120,20 @@ def main():
     with Server(args.host, args.port) as server:
         greeting = server.receive()
         greeting = greeting.decode()
-
         print(greeting)
 
-        selection = input("\nSelection (exercise index or name): ")
-        server.send(selection.encode())
+        try:
+            selection = "Simple Hash"
+            server.send(selection)
 
-        print(server.receive())
+            start_message = server.receive()
+            start_message = start_message.decode()
+            print(start_message)
+
+            simple_hash(server)
+
+        except ServerError as e:
+            print_error(e.json)
 
 
 if __name__ == "__main__":

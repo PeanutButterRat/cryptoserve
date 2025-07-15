@@ -59,16 +59,15 @@ async def handle_client(client: Client):
             if not (0 <= selection < len(EXERCISES)):
                 raise InvalidParameterError(
                     error="invalid exercise selected",
-                    explanation=f"You selected an exercise by an invalid index. The index must be between 0 and {len(EXERCISES) - 1}, but you supplied {selection}.",
+                    explanation=f"You selected an exercise by an invalid index. The index must be between 0 and {len(EXERCISES) - 1}, but you sent {selection}.",
                 )
 
-            name, function = EXERCISES[selection]
-            exercise = function
+            exercise = EXERCISES[selection]
 
         else:
             for name, function in EXERCISES:
                 if selection == name:
-                    exercise = function
+                    exercise = (name, function)
                     break
             else:
                 raise InvalidParameterError(
@@ -76,7 +75,9 @@ async def handle_client(client: Client):
                     explanation=f'The exercise "{selection}" could not be found by name.',
                 )
 
-        await exercise(client)
+        name, function = exercise
+        await client.send(f"START EXERCISE {name}")
+        await function(client)
 
     except TimeoutError:
         raise ClientTimeoutError(
