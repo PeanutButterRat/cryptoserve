@@ -1,5 +1,4 @@
 import os
-from inspect import getmembers, isfunction
 
 import cryptoserve.exercises
 from cryptoserve.exercises import load_exercises
@@ -44,6 +43,6 @@ for i, (name, exercise) in enumerate(load_exercises(path)):
     number = f"{i:<1}. "
     numbered_line = f"{number}{exercise_converted_from_snakecase}"
     menu.exercises.add_line(numbered_line)
-    EXERCISES.append(exercise)
+    EXERCISES.append((exercise_converted_from_snakecase, exercise))
 
 GREETING = str(menu)

@@ -1,10 +1,9 @@
 import asyncio
 from functools import partial
-from typing import Callable
 
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client
-from cryptoserve.types import ClientTimeoutError, ExerciseError
+from cryptoserve.types import ClientTimeoutError, ExerciseError, InvalidParameterError
 
 
 async def serve(host: str, port: int, timeout: int):
@@ -54,9 +53,31 @@ async def handle_client(client: Client):
     try:
         await client.send(GREETING.encode())
         selection = await client.expect_str()
-        selection = clamp(int(selection), 0, len(EXERCISES) - 1)
-        exercise = EXERCISES[selection]
+
+        if selection.isnumeric():
+            selection = int(selection)
+            if not (0 <= selection < len(EXERCISES)):
+                raise InvalidParameterError(
+                    error="invalid exercise selected",
+                    explanation=f"You selected an exercise by an invalid index. The index must be between 0 and {len(EXERCISES) - 1}, but you supplied {selection}.",
+                )
+
+            name, function = EXERCISES[selection]
+            exercise = function
+
+        else:
+            for name, function in EXERCISES:
+                if selection == name:
+                    exercise = function
+                    break
+            else:
+                raise InvalidParameterError(
+                    error="invalid exercise selected",
+                    explanation=f'The exercise "{selection}" could not be found by name.',
+                )
+
         await exercise(client)
+
     except TimeoutError:
         raise ClientTimeoutError(
             error="the connection timed out",
@@ -67,7 +88,3 @@ async def handle_client(client: Client):
                 "Did you miss any small steps in the exercise?",
             ],
         )
-
-
-def clamp(x, minimum, maximum):
-    return max(minimum, min(x, maximum))
