@@ -1,6 +1,8 @@
 import json
 from typing import List, Optional
 
+from cryptoserve.messaging.printing import prettify
+
 
 class ExerciseError(Exception):
     def __init__(
@@ -10,14 +12,23 @@ class ExerciseError(Exception):
         self.explanation = explanation
         self.hints = hints or []
 
-    def json(self):
-        dictionary = {
-            "error": f"{type(self).__name__}: {self}",
-            "explanation": self.explanation,
-            "hints": self.hints,
-        }
+    def prettify(self):
+        error = f"{type(self).__name__}: {self}"
+        explanation = self.explanation if self.explanation else "None"
+        hints = "\n".join([f"• {hint}" for hint in self.hints])
 
-        return json.dumps(dictionary)
+        sections = [
+            ("Error", error, "indian_red"),
+            ("Explanation", explanation, "green"),
+            ("Hints", hints, "yellow"),
+        ]
+
+        if not hints:
+            sections.pop()
+
+        error = prettify(sections)
+
+        return error
 
 
 class InvalidPaddingError(ExerciseError):

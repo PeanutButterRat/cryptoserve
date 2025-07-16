@@ -11,6 +11,7 @@ python = "^3.11"
 numpy = "^2.2.6"
 aes = "^1.2.0"
 pycryptodome = "^3.23.0"
+rich = "^14.0.0"
 
 [tool.poetry.group.docs]
 optional = true
