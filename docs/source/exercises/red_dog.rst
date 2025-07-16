@@ -41,6 +41,15 @@ The protocol works by the following:
 4. The **server** deals the last card and sends it back to the client with the appropriate flag set depending on the outcome.
 5. Steps **1 - 4** are repeated until the client hits the goal, runs out of money, or runs out of rounds. 
 
+.. note::
+
+   For the sake of simplicity, the traditional game of **Red Dog** has been altered slightly to make it easier to work with. In a real game, the money
+   you win depends on the size of the spread, but here you will either win double your initial bet or lose it (i.e. "double or nothing").
+   
+   In real **Red Dog**, pushes occur when the spread is too small. For example, imagine the dealer deals a **7 of Hearts** and an **8 of Clubs**. Because there are no cards that fit in the
+   spread, the player receives their initial bet and the round ends like nothing happened (i.e. a "push"). In this version, **pushes are ignored** so you must set your bet accordingly if there is no chance
+   of winning a given round.
+
 
 Flag Meanings
 -------------
@@ -58,9 +67,9 @@ card is dealt.
 +-------+--------------------------------------------------+
 | Bit   | Meaning                                          |
 +=======+==================================================+
-| 0     | You placed a losing bet on the last round.       |
+| 0     | You placed a winning bet on the last round.      |
 +-------+--------------------------------------------------+
-| 1     | You placed a winning bet on the last round.      |
+| 1     | You placed a losing bet on the last round.       |
 +-------+--------------------------------------------------+
 
 Card Mapping
