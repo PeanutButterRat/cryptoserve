@@ -79,6 +79,7 @@ async def handle_client(client: Client):
         name, function = exercise
         await client.send(f"START EXERCISE {name}")
         await function(client)
+        await client.send(f"FINISH EXERCISE {name}")
 
     except TimeoutError:
         raise ClientTimeoutError(
