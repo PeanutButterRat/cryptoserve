@@ -27,4 +27,4 @@ in the ``tests`` package.
    :recursive:
    :toctree: _autosummary
 
-   tests.utils
+   tests
