@@ -3,11 +3,8 @@ import time
 from enum import IntFlag
 
 from cryptoserve.messaging import Client
-from cryptoserve.types.errors import (
-    ExerciseError,
-    InvalidLengthError,
-    InvalidParameterError,
-)
+from cryptoserve.types.errors import (ExerciseError, InvalidLengthError,
+                                      InvalidParameterError)
 
 MAX_ROUNDS = 10
 STARTING_MONEY = 100
@@ -63,17 +60,24 @@ async def red_dog(client: Client) -> None:
     money_remaining = STARTING_MONEY
     rounds_completed = 0
 
+    generator = random.choice(GENERATORS)
+    generator.seed()
+
     while 0 < money_remaining < TARGET_MONEY and rounds_completed < MAX_ROUNDS:
         await client.send(money_remaining.to_bytes(2))
-        dealt_cards = deal()
-        message = dealt_cards[0].to_bytes(4) + dealt_cards[1].to_bytes(4)
+
+        dealt_cards = [generator.next() for card in range(3)]
+        message = dealt_cards[0].to_bytes() + dealt_cards[1].to_bytes()
         await client.send(message)
 
         bet, guess = await client.expect(
             verifier=verify_bet, length=3, money_remaining=money_remaining
         )
 
-        low_value, high_value, final_value = map(calculate_card_value, dealt_cards)
+        card_values = list(map(calculate_card_value, dealt_cards))
+        low_value, high_value = sorted(card_values[:2])
+        final_value = card_values[-1]
+
         correct_guess = (
             INSIDE_GUESS if low_value < final_value < high_value else OUTSIDE_GUESS
         )
@@ -81,12 +85,12 @@ async def red_dog(client: Client) -> None:
         if guess == correct_guess:
             money_remaining += bet
             await client.send(
-                dealt_cards[2].to_bytes(4), message_flags=RedDogExerciseFlags.WIN
+                dealt_cards[2].to_bytes(), exercise_flags=RedDogExerciseFlags.WIN
             )
         else:
             money_remaining -= bet
             await client.send(
-                dealt_cards[2].to_bytes(4), exercise_flags=RedDogExerciseFlags.LOSE
+                dealt_cards[2].to_bytes(), exercise_flags=RedDogExerciseFlags.LOSE
             )
 
         rounds_completed += 1
@@ -139,18 +143,3 @@ def verify_bet(received_data: bytes, money_remaining: int) -> int:
         )
 
     return bet, guess
-
-
-def deal():
-    while True:
-        generator = random.choice(GENERATORS)
-        generator.seed()
-
-        cards_dealt = [generator.next(), generator.next()]
-        cards_dealt.sort(key=calculate_card_value)
-        low_value, high_value = map(calculate_card_value, cards_dealt[:2])
-
-        if high_value - low_value >= 2:
-            final_card = generator.next()
-            cards_dealt.append(final_card)
-            return cards_dealt
