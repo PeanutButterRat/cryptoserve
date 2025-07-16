@@ -2,7 +2,7 @@ import asyncio
 from functools import partial
 
 from cryptoserve.greeting import EXERCISES, GREETING
-from cryptoserve.messaging import Client
+from cryptoserve.messaging import Client, prettify
 from cryptoserve.types import ClientTimeoutError, ExerciseError, InvalidParameterError
 
 
@@ -41,10 +41,10 @@ async def connect(
 
     if error:
         try:
-            message = error.json()
-            await client.error(message)
-        except:
-            pass
+            error = error.prettify()
+            await client.error(error)
+        except Exception as e:
+            print(f"Another error occurred when sending an error message: {e}")
 
     print(f"Terminating connection with {address}")
 
