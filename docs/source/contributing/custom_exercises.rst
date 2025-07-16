@@ -57,7 +57,7 @@ you expected to receive a pair of bytes that are coprime for some purpose. You c
 
    from math import gcd
 
-   def verify_byte_pair_is_coprime(data: bytes):
+   def verify_byte_pair_is_coprime(received_data: bytes):
       if gcd(data[0], data[1]) == 1:
          raise ExerciseError(
             error="short Pythonic error message",
@@ -82,6 +82,43 @@ length-checking or want more explicit, you must place that logic in the verifier
 
 To stop the exercise due to an error, simply raise an instance of |ExerciseError|. There are also various subclasses with different names
 but have the same functionality. Choose the one with the name that gives the most insight into what went wrong or make your own subclass!
+
+
+Verifier Parameters
+^^^^^^^^^^^^^^^^^^^
+
+The verifier function is passed data from the server based on the names of its arguments.
+
+1. ``recieved_data``: the actual bytes of the message.
+2. ``server_flags``: the server flags byte of the message.
+3. ``exercise_flags``: the server flags byte of the message.
+
+In order for your verifier to be called with any of these parts, you must include that parameter with that exact name. Here are some examples:
+
+.. code-block:: python
+
+   # This verifier just receives the message data.
+   def verifier(received_data):
+      pass
+
+   # This verifier just receives the exercise flags from the message.   
+   def verifier(exercise_flags):
+      pass
+
+   # This verifier just receives the flags from the message.
+   def verifier(server_flags, exercise_flags):
+      pass
+
+   # This verifier receives all parts of the message.
+   def verifier(received_data, server_flags, exercise_flags):
+      pass
+
+   # This verifier wont receive any messsage data.
+   def verifier():
+      pass
+
+This allows you to pick and choose what parts of a message are relevant for your purposes. For example, if you are expecting data that doens't
+rely on any exercise flags, you don't need to include it in your verifier function.
 
 
 Making You Exercise Available
