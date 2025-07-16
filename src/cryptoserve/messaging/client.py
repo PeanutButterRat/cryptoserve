@@ -1,6 +1,4 @@
-"""
-Interface for facilitating communication between the client and server.
-
+"""Interface for facilitating communication between the client and server.
 
 This module defines the ``Client`` class which abstracts the details away of the network protocol. It handles the details
 of encapsulating data for transmission so the developer can concern themselves with the data themselves instead of
@@ -40,8 +38,7 @@ def parse_header(header: bytes) -> tuple[int, int, int]:
 
 
 class Client:
-    """
-    Interface for sending and receiving data from a user.
+    """Interface for sending and receiving data from a user.
 
     This class is used as an interface for sending and receiving data from a socket between the client and server.
     It provides various utilities to abstract the underlying protocol information to send blobs of data back and
@@ -54,8 +51,7 @@ class Client:
         writer: asyncio.StreamWriter,
         timeout: int = 5,
     ):
-        """
-        Constructor method.
+        """Constructor method.
 
         Args:
             reader: Reader instance for reading from the socket. This should not be instantiated directly but rather
@@ -81,8 +77,7 @@ class Client:
             return received_data, exercise_flags, server_flags
 
     async def _write(self, data: bytes):
-        """
-        Write to the socket.
+        """Write to the socket.
 
         This method should be used to write data to the socket connection instead of interacting with the StreamWriter
         directly in order to make the class easier to mock during testing.
@@ -100,8 +95,12 @@ class Client:
         server_flags: int | MessageFlags = 0,
         exercise_flags: int | MessageFlags = 0,
     ):
-        """
-        Send a collection of bytes to the client.
+        """Send a collection of bytes to the client.
+
+        Args:
+            data: The bytes to send.
+            server_flags: The server flags to use in the message header. Defaults to 0.
+            exercise_flags: The exercise flags to use in the message header. Defaults to 0.
         """
         async with asyncio.timeout(self.timeout):
             if isinstance(data, str):
@@ -116,8 +115,7 @@ class Client:
         verifier: Optional[Callable[[bytes], Any]] = None,
         **kwargs,
     ) -> Any:
-        """
-        Receive a message and optionally verify its content or length.
+        """Receive a message and optionally verify its content or length.
 
         This method reads a raw byte message from the stream, optionally checks its
         length, and applies a function to modify and further validate the content.
@@ -160,8 +158,7 @@ class Client:
                 return received_data
 
     async def expect_str(self, length: int = -1) -> str:
-        """
-        Receive a UTF-8 string from the client with optional length validation.
+        """Receive a UTF-8 string from the client with optional length validation.
 
         This method internally calls `expect` with a byte-to-string verifier, and
         checks the resulting string's length if specified.
@@ -189,8 +186,7 @@ class Client:
             return string
 
     async def error(self, message: str):
-        """
-        Send an error message to the client.
+        """Send an error message to the client.
 
         The message string is encoded to UTF-8 and sent using the `send` method
         with the error flag set.
@@ -203,8 +199,7 @@ class Client:
             await self.send(raw_bytes, server_flags=MessageFlags.ERROR)
 
     async def ok(self):
-        """
-        Send an OK message to the client.
+        """Send an OK message to the client.
 
         Sends the string "OK" to the client. Use this to confirm data sent by the client
         when no other response is applicable.

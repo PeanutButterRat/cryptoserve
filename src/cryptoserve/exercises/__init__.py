@@ -7,8 +7,7 @@ from cryptoserve.messaging.client import Client
 
 
 def load_exercises(directory: str) -> list[tuple[str, callable]]:
-    """
-    Load Cryptoserve exercises from a directory.
+    """Load Cryptoserve exercises from a directory.
 
     This method recursively searches through a directory for Python files to find functions that look like
     Cryptoserve exercises. The file must end with the **.py** file extension but doesn't have to be in a folder
@@ -47,8 +46,7 @@ def load_exercises(directory: str) -> list[tuple[str, callable]]:
 
 
 def _has_exercise_signature(function: callable):
-    """
-    Check if the callable object has the correct signature to be considered a Cryptoserve exercise.
+    """Check if the callable object has the correct signature to be considered a Cryptoserve exercise.
 
     Returns True if the function name is not prefixed with an underscore (_) and has the signature **(Client) -> None**.
     The function must use type hints in order to be recognized as a proper exercise.
