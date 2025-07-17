@@ -26,19 +26,7 @@ Header Format
 The message header is **four bytes** in size. The two most significant bytes (first two) are reserved for message flags
 while the least significant (last two) are reserved for the message size. The most significant flag byte is reserved for
 server flags which give the user notice about how to interpret the message while the other flag byte is reserved for
-exercise use if needed. Here is a visual diagram that shows the number of bits in each field. Please note that the numbers
-shown are **not** the bit numbers used in the rest of the documentation as they are reversed (i.e. bit 0 in the diagram is
-actually bit 7 of the server flags).
-
-.. mermaid::
-
-  ---
-  title: "Header Format (bits)"
-  ---
-  packet-beta
-    0-7: "Server Flags"
-    8-15: "Exercise Flags"
-    16-31: "Message Length"
+exercise use if needed.
 
 .. note::  Because there are 16 bits used for the message length field, the maximum payload size is **65535** bytes (2¹⁶ - 1).
 

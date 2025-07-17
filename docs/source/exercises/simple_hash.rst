@@ -85,34 +85,48 @@ Here is a visual representation of the client-server interaction where...
 - **cᵢ** is the i-th chunk of input data.
 - **n** is the total number of chunks to be hashed.
 
-.. mermaid::
+.. uml::
 
-   sequenceDiagram
-      participant Client
-      participant Server
+   participant Client
+   participant Server
 
-      Client->>Server: Input
-      Server-->>Client: OK
+   Client ->> Server : Input
+   Server -->> Client : OK
 
-      Client->>Server: Padded Input
-      Server-->>Client: OK
+   Client ->> Server : Padded Input
+   Server -->> Client : OK
 
-      Note over Client: h₀ ← [Input.length, Input.length]
-      Note over Client: h₁ ← f(h₀, c₁)
-      Client->>Server: h₁
+   note over Client
+     h₀ ← [Input.length, Input.length]
+   end note
 
-      Note over Server: h₂ ← g(h₁, c₂)
-      Server-->>Client: h₂
+   note over Client
+     h₁ ← f(h₀, c₁)
+   end note
 
-      loop for (i = 3, i < n, i += 2)
-         Note over Client: hᵢ ← f(hᵢ₋₁, cᵢ)
-         Client->>Server: hᵢ
+   Client ->> Server : h₁
 
-         Note over Server: hᵢ₊₁ ← g(hᵢ, cᵢ₊₁)
-         Server-->>Client: hᵢ₊₁
-      end
+   note over Server
+     h₂ ← g(h₁, c₂)
+   end note
 
-      Note over Client, Server: Final Hash = hₙ
+   Server -->> Client : h₂
+
+   loop for (i = 3, i < n, i += 2)
+     note over Client
+       hᵢ ← f(hᵢ₋₁, cᵢ)
+     end note
+     Client ->> Server : hᵢ
+
+     note over Server
+       hᵢ₊₁ ← g(hᵢ, cᵢ₊₁)
+     end note
+     Server -->> Client : hᵢ₊₁
+   end
+
+   note over Client, Server
+     Final Hash = hₙ
+   end note
 
 
 Example
@@ -151,40 +165,51 @@ Data Exchange
 
    The use of **loop** here is solely intended to visually section off each chunk of data.
 
-.. mermaid::
+.. uml::
 
-   sequenceDiagram
-      participant Client
-      participant Server
+   participant Client
+   participant Server
 
-      Client->>Server: 0x4170 706C 65
-      Server-->>Client: OK
+   Client ->> Server : 0x4170 706C 65
+   Server -->> Client : OK
 
-      Client->>Server: 0x4170 706C 6500 0000
-      Server-->>Client: OK
+   Client ->> Server : 0x4170 706C 6500 0000
+   Server -->> Client : OK
 
-      Note over Client: h₀ = 0x0505
+   note over Client
+     h₀ = 0x0505
+   end note
 
-      loop chunk 1
-         Note over Client: h₁ = f(0x0505, 0x4170) = 0x3A58
-         Client->>Server: h₁
-      end
+   loop chunk 1
+     note over Client
+       h₁ = f(0x0505, 0x4170) = 0x3A58
+     end note
+     Client ->> Server : h₁
+   end
 
-      loop chunk 2
-         Note over Server: h₂ = g(0x3A58, 0x706C) = 0x0AA0
-         Client->>Server: h₂
-      end
+   loop chunk 2
+     note over Server
+       h₂ = g(0x3A58, 0x706C) = 0x0AA0
+     end note
+     Client ->> Server : h₂
+   end
 
-      loop chunk 3
-         Note over Client: h₃ = f(0x0AA0, 0x6500) = 0x7BF1
-         Client->>Server: h₃
-      end
+   loop chunk 3
+     note over Client
+       h₃ = f(0x0AA0, 0x6500) = 0x7BF1
+     end note
+     Client ->> Server : h₃
+   end
 
-      loop chunk 4
-         Note over Server: h₄ = g(0x7BF1, 0x0000) = 0x62AE
-         Client->>Server: h₄
-      end
+   loop chunk 4
+     note over Server
+       h₄ = g(0x7BF1, 0x0000) = 0x62AE
+     end note
+     Client ->> Server : h₄
+   end
 
-      Note over Client, Server: Final Hash = h₄ = 0x62AE
+   note over Client, Server
+     Final Hash = h₄ = 0x62AE
+   end note
 
 Therefore, the **Simple Hash** of **Apple** is 0x62AE.
