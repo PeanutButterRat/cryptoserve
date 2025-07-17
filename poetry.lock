@@ -850,6 +850,23 @@ sphinx = "*"
 test = ["defusedxml", "myst-parser", "pytest", "ruff", "sphinx"]
 
 [[package]]
+name = "sphinxcontrib-plantuml"
+version = "0.30"
+description = "Sphinx \"plantuml\" extension"
+optional = false
+python-versions = "*"
+groups = ["docs"]
+files = [
+    {file = "sphinxcontrib-plantuml-0.30.tar.gz", hash = "sha256:2a1266ca43bddf44640ae44107003df4490de2b3c3154a0d627cfb63e9a169bf"},
+]
+
+[package.dependencies]
+Sphinx = ">=1.6"
+
+[package.extras]
+test = ["Pillow", "flake8", "pytest"]
+
+[[package]]
 name = "sphinxcontrib-qthelp"
 version = "2.0.0"
 description = "sphinxcontrib-qthelp is a sphinx extension which outputs QtHelp documents"
@@ -904,4 +921,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "b6271b5abf10d49bddfe8f56b986ff15946764f8ff242698e53b383c23b11b85"
+content-hash = "9c9fc7c2f2ffdeabea2867ac136c287a10008e842098909cd35e85f1b8c510c4"

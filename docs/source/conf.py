@@ -14,6 +14,7 @@ author = "Eric Brown"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinxcontrib.plantuml",
     "sphinxcontrib.mermaid",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",

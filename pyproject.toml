@@ -21,6 +21,7 @@ sphinx = "^8.2.3"
 sphinx-rtd-theme = "^3.0.2"
 sphinxcontrib-mermaid = "^1.0.0"
 sphinx-autodoc-typehints = "^3.2.0"
+sphinxcontrib-plantuml = "^0.30"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^8.4.1"
