@@ -1,4 +1,3 @@
-import json
 from typing import List, Optional
 
 from cryptoserve.messaging.printing import prettify
