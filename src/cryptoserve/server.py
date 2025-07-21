@@ -3,7 +3,8 @@ from functools import partial
 
 from cryptoserve.greeting import EXERCISES, GREETING
 from cryptoserve.messaging import Client, prettify
-from cryptoserve.types import ClientTimeoutError, ExerciseError, InvalidParameterError
+from cryptoserve.types import (ClientTimeoutError, ExerciseError,
+                               InvalidParameterError)
 
 
 async def serve(host: str, port: int, timeout: int):
