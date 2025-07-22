@@ -2,7 +2,7 @@ import pytest
 
 from cryptoserve.exercises.red_dog import red_dog
 from cryptoserve.messaging import Client
-from cryptoserve.types.errors import InvalidParameterError
+from cryptoserve.types import InvalidParameterError
 from tests.utils import simulate_exercise
 
 ONE_HUNDRED = b"\x00\x64"

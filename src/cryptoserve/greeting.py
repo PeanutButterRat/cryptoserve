@@ -11,7 +11,7 @@ import os
 
 import cryptoserve.exercises
 from cryptoserve.exercises import load_exercises
-from cryptoserve.messaging.printing import prettify
+from cryptoserve.messaging import prettify
 
 DOCUMENTATION_LINK = "https://cryptoserve.readthedocs.io/"
 LINE_WIDTH = 70

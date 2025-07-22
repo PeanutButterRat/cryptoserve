@@ -3,7 +3,7 @@ import inspect
 import os
 from typing import get_type_hints
 
-from cryptoserve.messaging.client import Client
+from cryptoserve.messaging import Client
 
 
 def load_exercises(directory: str) -> list[tuple[str, callable]]:

@@ -3,8 +3,7 @@ import time
 from enum import IntFlag
 
 from cryptoserve.messaging import Client
-from cryptoserve.types.errors import (ExerciseError, InvalidLengthError,
-                                      InvalidParameterError)
+from cryptoserve.types import ExerciseError, InvalidParameterError
 
 MAX_ROUNDS = 10
 STARTING_MONEY = 100
