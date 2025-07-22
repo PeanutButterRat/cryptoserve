@@ -40,8 +40,6 @@ def find_generators(group: list[int], modulus: int) -> bool:
 z_star_251 = find_multiplicative_group(MODULUS)
 z_star_251_generators = find_generators(z_star_251, MODULUS)
 
-print(len(z_star_251))
-
 
 async def diffie_hellman_key_exchange(client: Client) -> None:
     generator = random.choice(z_star_251_generators)
