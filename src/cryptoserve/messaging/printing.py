@@ -7,7 +7,7 @@ from rich.panel import Panel
 from rich.text import Text
 
 
-def prettify(sections, width=80):
+def prettify(sections: list[tuple], width: int = 80, menu_title: str = "Error Report"):
     panels = []
 
     for title, body, color in sections:
@@ -23,7 +23,7 @@ def prettify(sections, width=80):
 
     message = Panel(
         Align.center(Group(*panels)),
-        title=" Error Report ",
+        title=f" {menu_title} ",
         title_align="center",
         border_style="bright_black",
         box=box.ROUNDED,

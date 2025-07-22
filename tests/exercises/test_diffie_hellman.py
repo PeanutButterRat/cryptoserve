@@ -1,7 +1,8 @@
 import pytest
 
-from cryptoserve.exercises.diffie_hellman_key_exchange import \
-    diffie_hellman_key_exchange
+from cryptoserve.exercises.diffie_hellman_key_exchange import (
+    diffie_hellman_key_exchange,
+)
 from cryptoserve.messaging import Client
 from cryptoserve.types import DataMismatchError
 from tests.utils import simulate_exercise
@@ -11,7 +12,6 @@ deterministic_patches = {
     "random.randint": lambda *_: 2,
     "random.choice": lambda iterable: iterable[0],
 }
-
 
 
 @simulate_exercise(
