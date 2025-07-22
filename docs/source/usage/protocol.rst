@@ -11,7 +11,7 @@ a logical conversation between client and server.
 Message Structure
 -----------------
 
-The overall structure of a message (packet) in Cryptoserve constitutes of two parts:
+The overall structure of a message in Cryptoserve constitutes of two parts:
 
 1. Header
 2. Data
@@ -28,14 +28,23 @@ while the least significant (last two) are reserved for the message size. The mo
 server flags which give the user notice about how to interpret the message while the other flag byte is reserved for
 exercise use if needed.
 
-.. note::  Because there are 16 bits used for the message length field, the maximum payload size is **65535** bytes (2¹⁶ - 1).
+Here's a visual representation of how the header is structured:
+
+::
+ 
+   32             24               16            0  (bit index)
+   +--------------+----------------+-------------+
+   | Server Flags | Exercise Flags | Data Length |  (field)
+   +--------------+----------------+-------------+
+
+.. note::  Because the message length field is comprised of 16 bits, the maximum payload size is **65,535** bytes (2¹⁶ - 1).
 
 
 Server Flags
 ------------
 
 Server flags are used to convey to the user information about what has happened during the exchange or how to
-interpret some type of data. Most flags are not currently used but may be added in future versions of the software.
+interpret some type of data. Most flags are not currently in use but may have meaning in future versions of the software.
 
 =========  =====  ===================================
 Bit(s)     Name   Description
@@ -48,9 +57,11 @@ Error
 ^^^^^
 
 **Bit 7 (MSB)**. The **error flag** is used to indicate that the client has done something wrong in the exchange and 
-subsequently failed the exercise. The data sent alongside the message is encoded as JSON data in UTF-8
-that contains hints about what went wrong for debugging purposes on the client side. The socket is also closed after an
-error message is sent.
+subsequently failed the exercise. The data sent alongside the message is encoded in UTF-8 that contains hints about
+what went wrong for debugging purposes on the client side. The server also closes the connection after an error message is sent.
+
+These messages are also color-coded using `ANSI color codes <https://en.wikipedia.org/wiki/ANSI_escape_code>`_. While most modern terminals
+support these, errors might be a little difficult to read if your terminal does not.
 
 .. note:: Errors currently only have meaning if they are sent from the server to the client. The server ignores this bit field entirely.
 
