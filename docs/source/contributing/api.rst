@@ -20,8 +20,7 @@ Core
 Tests
 ^^^^^
 
-The following package holds all the documentation written for any unit tests
-in the ``tests`` package.
+This package holds all the documentation written for the unit tests.
 
 .. autosummary::
    :recursive:
