@@ -89,7 +89,7 @@ Verifier Parameters
 
 The verifier function is passed data from the server based on the names of its arguments.
 
-1. ``recieved_data``: the actual bytes of the message.
+1. ``received_data``: the actual bytes of the message.
 2. ``server_flags``: the server flags byte of the message.
 3. ``exercise_flags``: the server flags byte of the message.
 

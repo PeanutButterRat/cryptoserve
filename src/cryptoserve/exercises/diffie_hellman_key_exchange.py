@@ -67,7 +67,7 @@ async def diffie_hellman_key_exchange(client: Client) -> None:
     if data != plaintext:
         raise DataMismatchError(
             error="plaintext does not match the original data",
-            explanation=f"The plaintext the server recieved did not match the original data generated. The server encrypted '{data}' but received {plaintext}.",
+            explanation=f"The plaintext the server received did not match the original data generated. The server encrypted '{data}' but received {plaintext}.",
             hints=[
                 "Are you parsing the data from the server as the IV and plaintext correctly?",
                 "Are you using the correct mode of decryption for AES?",
