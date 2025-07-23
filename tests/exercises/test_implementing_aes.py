@@ -1,5 +1,3 @@
-import random
-
 import aes
 import pytest
 from Crypto.Cipher import AES
