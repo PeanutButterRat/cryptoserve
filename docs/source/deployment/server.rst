@@ -54,7 +54,7 @@ Cryptoserve also supports containerized deployment using Docker. To build and ru
 
    .. code-block:: bash
 
-      docker build -t cryptoserve .
+      docker build --target app-runtime -t cryptoserve .
 
 2. **Run the Docker Container**
 
