@@ -124,7 +124,7 @@ class Client:
             length: Expected length of the message. If greater than 0, the message length will
                 be verified and raise a DataTransmissionError if the length does not match.
             verifier: A function that accepts an array of raw bytes and returns a processed or validated result.
-                If None, returns the raw bytes.
+                If None, returns the raw bytes. See :ref:`verifier-parameters` for more details.
 
         Returns:
             Any: The raw bytes, or the result of the verifier function.

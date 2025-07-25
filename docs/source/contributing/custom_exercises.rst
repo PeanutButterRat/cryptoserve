@@ -84,6 +84,8 @@ To stop the exercise due to an error, simply raise an instance of |ExerciseError
 but have the same functionality. Choose the one with the name that gives the most insight into what went wrong or feel free to make your own subclass.
 
 
+.. _verifier-parameters:
+
 Verifier Parameters
 ^^^^^^^^^^^^^^^^^^^
 
