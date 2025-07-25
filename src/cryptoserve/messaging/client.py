@@ -74,7 +74,7 @@ class Client:
             header = await self._read(HEADER_LENGTH_BYTES)
             data_length, server_flags, exercise_flags = parse_header(header)
             received_data = await self._read(data_length)
-            return received_data, exercise_flags, server_flags
+            return received_data, server_flags, exercise_flags
 
     async def _write(self, data: bytes):
         """Write to the socket.
@@ -124,7 +124,7 @@ class Client:
             length: Expected length of the message. If greater than 0, the message length will
                 be verified and raise a DataTransmissionError if the length does not match.
             verifier: A function that accepts an array of raw bytes and returns a processed or validated result.
-                If None, returns the raw bytes.
+                If None, returns the raw bytes. See :ref:`verifier-parameters` for more details.
 
         Returns:
             Any: The raw bytes, or the result of the verifier function.
@@ -133,7 +133,7 @@ class Client:
             DataTransmissionError: If the message length does not match the expected length.
         """
         async with asyncio.timeout(self.timeout):
-            received_data, exercise_flags, server_flags = await self.receive()
+            received_data, server_flags, exercise_flags = await self.receive()
 
             if length > 0 and len(received_data) != length:
                 raise DataTransmissionError(
@@ -146,8 +146,8 @@ class Client:
 
                 for key, value in [
                     ("received_data", received_data),
-                    ("exercise_flags", exercise_flags),
                     ("server_flags", server_flags),
+                    ("exercise_flags", exercise_flags),
                 ]:
                     if key in signature.parameters:
                         arguments[key] = value

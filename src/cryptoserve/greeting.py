@@ -17,17 +17,17 @@ DOCUMENTATION_LINK = "https://cryptoserve.readthedocs.io/"
 LINE_WIDTH = 70
 
 project_description = """Cryptoserve is server software that hosts a library 
-of cryptography-related exercises, designed to help students learn a broad
-range of cryptographic concepts through hands-on experimentation. Each
-exercise defines a protocol in which Cryptoserve controls one side of
+of cryptography-related exercises, designed to help students learn a broad 
+range of cryptographic concepts through hands-on experimentation. Each 
+exercise defines a protocol in which Cryptoserve controls one side of 
 the interaction."""
 
 project_description = project_description.replace("\n", "")
 
-usage_directions = f"""As the end user, YOU are responsible for implementing
-the other side of the exchange in order to complete the challenge. To
-get started, please select from one of the available exercises listed
-below. For more usage information, please refer to the official
+usage_directions = f"""As the end user, YOU are responsible for implementing 
+the other side of the exchange in order to complete the challenge. To 
+get started, please select from one of the available exercises listed 
+below. For more usage information, please refer to the official 
 documentation at {DOCUMENTATION_LINK}."""
 
 usage_directions = usage_directions.replace("\n", "")
@@ -53,4 +53,4 @@ sections = [
     ("Available Exercises", numbered_exercise_names, "dark_orange3"),
 ]
 
-GREETING = prettify(sections)
+GREETING = prettify(sections, menu_title="Greetings!")

@@ -40,7 +40,6 @@ def find_generators(group: list[int], modulus: int) -> bool:
 z_star_251 = find_multiplicative_group(MODULUS)
 z_star_251_generators = find_generators(z_star_251, MODULUS)
 
-print(len(z_star_251))
 
 async def diffie_hellman_key_exchange(client: Client) -> None:
     generator = random.choice(z_star_251_generators)
@@ -67,7 +66,7 @@ async def diffie_hellman_key_exchange(client: Client) -> None:
     if data != plaintext:
         raise DataMismatchError(
             error="plaintext does not match the original data",
-            explanation=f"The plaintext the server recieved did not match the original data generated. The server encrypted '{data}' but received {plaintext}.",
+            explanation=f"The plaintext the server received did not match the original data generated. The server encrypted '{data}' but received {plaintext}.",
             hints=[
                 "Are you parsing the data from the server as the IV and plaintext correctly?",
                 "Are you using the correct mode of decryption for AES?",

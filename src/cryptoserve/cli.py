@@ -1,3 +1,5 @@
+"""The command-line entry point for Cryptoserve."""
+
 import argparse
 import asyncio
 
@@ -34,6 +36,10 @@ argparser.add_argument(
 
 
 def main():
+    """The main entry point for Cryptoserve.
+
+    Creates and runs the main server.
+    """
     args = argparser.parse_args()
 
     if not (0 <= args.port <= 65535):

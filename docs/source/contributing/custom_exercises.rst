@@ -44,7 +44,7 @@ messages back and forth from the user. To be recognized by Cryptoserve as a vali
 Receiving Data and Checking for Errors
 --------------------------------------
 
-The two methods you are probably most interested in are:
+The two methods you are probably most interested in are...
 
 1. |expect| for receiving data.
 2. |send| for sending data.
@@ -81,15 +81,17 @@ passed to the function is checked before the verifier is called, so the length i
 length-checking or want more explicit, you must place that logic in the verifier itself.
 
 To stop the exercise due to an error, simply raise an instance of |ExerciseError|. There are also various subclasses with different names
-but have the same functionality. Choose the one with the name that gives the most insight into what went wrong or make your own subclass!
+but have the same functionality. Choose the one with the name that gives the most insight into what went wrong or feel free to make your own subclass.
 
+
+.. _verifier-parameters:
 
 Verifier Parameters
 ^^^^^^^^^^^^^^^^^^^
 
 The verifier function is passed data from the server based on the names of its arguments.
 
-1. ``recieved_data``: the actual bytes of the message.
+1. ``received_data``: the actual bytes of the message.
 2. ``server_flags``: the server flags byte of the message.
 3. ``exercise_flags``: the server flags byte of the message.
 

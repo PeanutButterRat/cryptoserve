@@ -113,7 +113,7 @@ def simulate_exercise(
     """Decorator that sets up a Pytest function for simulating a networked exercise.
 
     Use this decorator to simulate an exercise by bypassing traditional sockets and injecting
-    test data directly into a mocked client. It allows testing of client behavior without requiring
+    test data directly into a mocked client. It allows the simulation of client behavior without requiring
     actual network communication.
 
     Each argument can be given as a list of bytes (bytes to send/receive per call) or strings. Strings
@@ -122,16 +122,16 @@ def simulate_exercise(
     and the second and third are the server and exercise flags, respectively. Any of these values can be
     None, in which case they are ignored during validation.
 
-    If `sent_data` is None, no validation is performed on what the client sends. This can also be None
+    If `sent_data` is None, no validation is performed on what the server sends. This can also be None
     for individual elements in the `sent_data` list, meaning the corresponding call will not be checked.
     Similarly, any flag field (server or exercise) can be None to skip validation for that flag.
 
     Args:
-        received_data: A list of data elements the mock client will receive.
+        received_data: A list of data elements the mock client will send (i.e. the server receives).
             This simulates incoming messages from the server. Each subsequent call returns the next
             value in the list, corresponding to a sequence of `Client.receive()` calls.
 
-        sent_data: A list of expected data that the client is
+        sent_data: A list of expected data that the server is
             supposed to send during the exercise. Used for validating outbound communication.
             If None, no validation is performed on outbound data.
 
